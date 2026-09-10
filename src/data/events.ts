@@ -7,6 +7,7 @@ export interface GameEvent {
   options: {
     label: string;
     description: string;
+    cost?: number;
     action: (state: GameState) => Partial<GameState>;
   }[];
 }
@@ -88,6 +89,7 @@ export const SCAVENGE_EVENTS: GameEvent[] = [
       {
         label: 'Apostar $15 al tiro mayor',
         description: '50% probabilidad de ganar $35 y +8 Reputación por tu astucia callejera. Si pierdes, pierdes los $15.',
+        cost: 15,
         action: (state) => {
           if (state.money < 15) {
             return { mood: Math.max(0, state.mood - 5) };

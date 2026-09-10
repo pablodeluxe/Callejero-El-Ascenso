@@ -8,6 +8,7 @@ export interface GameEvent {
   options: {
     label: string;
     description: string;
+    cost?: number;
     action: (state: GameState) => Partial<GameState>;
   }[];
 }
@@ -47,6 +48,7 @@ const EVENTS: GameEvent[] = [
       {
         label: 'Gastar $50 en el veterinario',
         description: 'Pierdes $50, pero ganas +20 Ánimo.',
+        cost: 50,
         action: (state) => ({
           money: Math.max(0, state.money - 50),
           mood: Math.min(100, state.mood + 20)
@@ -69,6 +71,7 @@ const EVENTS: GameEvent[] = [
       {
         label: 'Pagar el soborno ($100)',
         description: 'Pierdes $100, pero evitas problemas.',
+        cost: 100,
         action: (state) => ({
           money: Math.max(0, state.money - 100)
         })
@@ -119,6 +122,7 @@ const EVENTS: GameEvent[] = [
       {
         label: 'Pagarle $25 para que te deje en paz',
         description: 'Evitas el peligro pero te sientes avergonzado (-$25, -5 Reputación, -10 Ánimo).',
+        cost: 25,
         action: (state) => ({
           money: Math.max(0, state.money - 25),
           reputation: Math.max(0, state.reputation - 5),
@@ -176,6 +180,8 @@ export function useGameLoop() {
       lastTickRef.current = now;
       
       const state = useGameStore.getState();
+      if (state.isGameOver) return;
+      
       state.tick(deltaSeconds);
       
       // Decay stats slowly

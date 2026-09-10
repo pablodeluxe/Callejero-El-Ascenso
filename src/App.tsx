@@ -7,7 +7,8 @@ import { PrestigeShop } from './components/PrestigeShop';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { EventModal } from './components/EventModal';
 import { OfflineModal } from './components/OfflineModal';
-import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle } from 'lucide-react';
+import { GameOverModal } from './components/GameOverModal';
+import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon } from 'lucide-react';
 
 export default function App() {
   useGameLoop(); // Initialize the game loop
@@ -20,7 +21,7 @@ export default function App() {
   const recoverStat = useGameStore((state) => state.recoverStat);
 
   // Compute total passive income per minute and per second
-  const { totalIncomePerMin, totalIncomePerSec, isDebuffed } = useMemo(() => {
+  const { totalIncomePerMin, totalIncomePerSec, isDebuffed, isHealthCritical } = useMemo(() => {
     let incomePerMin = 0;
     Object.entries(businessLevels).forEach(([id, level]) => {
       const config = BUSINESSES[id];
@@ -43,10 +44,17 @@ export default function App() {
     }
 
     incomePerMin *= modifier;
+
+    const critical = health < 10;
+    if (critical) {
+      incomePerMin = 0;
+    }
+
     return {
       totalIncomePerMin: incomePerMin,
       totalIncomePerSec: incomePerMin / 60,
-      isDebuffed: debuffed
+      isDebuffed: debuffed && !critical,
+      isHealthCritical: critical
     };
   }, [businessLevels, prestigeUpgrades, health, mood]);
 
@@ -60,6 +68,7 @@ export default function App() {
       {/* Modals */}
       <EventModal />
       <OfflineModal />
+      <GameOverModal />
       
       {/* Header */}
       <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
@@ -92,15 +101,22 @@ export default function App() {
 
             {/* Income Rate Badge */}
             <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
-                <TrendingUp className="w-3.5 h-3.5 shrink-0" />
-                <span>
-                  Pasivo: +${totalIncomePerMin.toFixed(2)} / min
-                  <span className="text-emerald-300/70 font-normal ml-1">(+${totalIncomePerSec.toFixed(2)}/s)</span>
-                </span>
-              </div>
+              {isHealthCritical ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/60 text-red-400 text-xs font-bold animate-pulse">
+                  <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
+                  <span>⛔ Ganancias detenidas: Salud por debajo del 10%</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                  <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+                  <span>
+                    Pasivo: +${totalIncomePerMin.toFixed(2)} / min
+                    <span className="text-emerald-300/70 font-normal ml-1">(+${totalIncomePerSec.toFixed(2)}/s)</span>
+                  </span>
+                </div>
+              )}
 
-              {isDebuffed && (
+              {isDebuffed && !isHealthCritical && (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium">
                   <AlertTriangle className="w-3 h-3 shrink-0" />
                   <span>-50% por baja Salud o Ánimo</span>

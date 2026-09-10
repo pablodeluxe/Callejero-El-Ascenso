@@ -3,6 +3,7 @@ import { useGameStore } from '../store/gameStore';
 export function EventModal() {
   const activeEvent = useGameStore((state) => state.activeEvent);
   const resolveEvent = useGameStore((state) => state.resolveEvent);
+  const money = useGameStore((state) => state.money);
 
   if (!activeEvent) return null;
 
@@ -23,20 +24,55 @@ export function EventModal() {
         </p>
 
         <div className="space-y-3">
-          {activeEvent.options.map((opt: any, i: number) => (
-            <button
-              key={i}
-              onClick={() => resolveEvent(opt.action)}
-              className="w-full text-left rounded-lg bg-slate-900/50 p-4 hover:bg-slate-700/80 transition border border-slate-700 hover:border-slate-500 group"
-            >
-              <div className="font-semibold text-white mb-1 group-hover:text-blue-400 transition-colors">
-                {opt.label}
-              </div>
-              <div className="text-xs text-slate-400">
-                {opt.description}
-              </div>
-            </button>
-          ))}
+          {activeEvent.options.map((opt: any, i: number) => {
+            const cost = typeof opt.cost === 'number'
+              ? opt.cost
+              : (() => {
+                  const match = opt.label.match(/\$(\d+)/);
+                  if (match && (
+                    opt.label.toLowerCase().includes('pagar') ||
+                    opt.label.toLowerCase().includes('gastar') ||
+                    opt.label.toLowerCase().includes('apostar') ||
+                    opt.label.toLowerCase().includes('soborno')
+                  )) {
+                    return parseInt(match[1], 10);
+                  }
+                  return 0;
+                })();
+
+            const canAfford = cost === 0 || money >= cost;
+
+            return (
+              <button
+                key={i}
+                disabled={!canAfford}
+                onClick={() => {
+                  if (canAfford) {
+                    resolveEvent(opt.action);
+                  }
+                }}
+                className={`w-full text-left rounded-lg p-4 transition border ${
+                  canAfford
+                    ? 'bg-slate-900/50 hover:bg-slate-700/80 border-slate-700 hover:border-slate-500 cursor-pointer group'
+                    : 'bg-slate-900/20 border-slate-800/70 opacity-45 cursor-not-allowed'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className={`font-semibold transition-colors ${canAfford ? 'text-white group-hover:text-blue-400' : 'text-slate-400'}`}>
+                    {opt.label}
+                  </div>
+                  {!canAfford && (
+                    <span className="text-[11px] font-semibold text-red-400 bg-red-950/60 px-2 py-0.5 rounded border border-red-900/50 shrink-0">
+                      Dinero insuficiente (${cost.toLocaleString()})
+                    </span>
+                  )}
+                </div>
+                <div className={`text-xs ${canAfford ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {opt.description}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

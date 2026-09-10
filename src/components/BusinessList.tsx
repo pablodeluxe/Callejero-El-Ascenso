@@ -4,9 +4,12 @@ import { Briefcase, ChevronUp } from 'lucide-react';
 
 export function BusinessList() {
   const money = useGameStore((state) => state.money);
+  const health = useGameStore((state) => state.health);
   const levels = useGameStore((state) => state.businessLevels);
   const buyBusiness = useGameStore((state) => state.buyBusiness);
   const prestigeUpgrades = useGameStore((state) => state.prestigeUpgrades);
+
+  const isPaused = health < 10;
 
   return (
     <div className="space-y-4">
@@ -15,7 +18,13 @@ export function BusinessList() {
           <Briefcase className="w-5 h-5 text-emerald-400" />
           Negocios Pasivos
         </h2>
-        <span className="text-xs text-slate-400">Generan ingresos automáticamente</span>
+        {isPaused ? (
+          <span className="text-xs font-bold text-red-400 bg-red-950/70 border border-red-800/80 px-2 py-0.5 rounded">
+            ⛔ Ganancias detenidas (Salud &lt; 10%)
+          </span>
+        ) : (
+          <span className="text-xs text-slate-400">Generan ingresos automáticamente</span>
+        )}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -36,10 +45,17 @@ export function BusinessList() {
                   <h3 className="font-semibold text-white text-base">{biz.name}</h3>
                   {currentLevel > 0 ? (
                     <div className="mt-1">
-                      <div className="text-sm font-bold text-emerald-400 flex items-center gap-1.5">
-                        <span>+${currentIncomePerMin.toFixed(2)} / min</span>
-                        <span className="text-xs font-normal text-slate-400">(+${currentIncomePerSec.toFixed(2)}/s)</span>
-                      </div>
+                      {isPaused ? (
+                        <div className="text-sm font-bold text-red-400 flex items-center gap-1.5">
+                          <span>$0.00 / min</span>
+                          <span className="text-xs font-normal text-red-400/80">(Detenido: Salud &lt; 10%)</span>
+                        </div>
+                      ) : (
+                        <div className="text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+                          <span>+${currentIncomePerMin.toFixed(2)} / min</span>
+                          <span className="text-xs font-normal text-slate-400">(+${currentIncomePerSec.toFixed(2)}/s)</span>
+                        </div>
+                      )}
                       <div className="text-[11px] text-slate-400 mt-0.5">
                         Nivel {currentLevel} × ${biz.baseIncome.toFixed(1)}/min base
                       </div>

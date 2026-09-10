@@ -38,6 +38,7 @@ export interface GameState {
     moodDecay: number;
   } | null;
   activeEvent: any | null; // Will define event type later
+  isGameOver: boolean;
   
   // Actions
   addMoney: (amount: number) => void;
@@ -45,6 +46,7 @@ export interface GameState {
   buyBusiness: (id: string) => void;
   buyPrestigeUpgrade: (upgrade: 'aura' | 'genetics' | 'entrepreneur', cost: number) => void;
   prestigeReset: (tokensGained: number) => void;
+  resetGame: () => void;
   updateStats: (healthDecay: number, hygieneDecay: number, moodDecay: number) => void;
   setOfflineReport: (report: GameState['offlineReport']) => void;
   triggerEvent: (event: any) => void;
@@ -68,6 +70,7 @@ export const useGameStore = create<GameState>()(
       lastSaved: Date.now(),
       offlineReport: null,
       activeEvent: null,
+      isGameOver: false,
 
       addMoney: (amount) => set((state) => ({ money: state.money + amount })),
       
@@ -82,6 +85,7 @@ export const useGameStore = create<GameState>()(
 
       buyBusiness: (id) => {
         const state = get();
+        if (state.isGameOver) return;
         const config = BUSINESSES[id];
         const currentLevel = state.businessLevels[id] || 0;
         const baseCost = state.prestigeUpgrades.entrepreneur ? config.baseCost * 0.75 : config.baseCost;
@@ -100,6 +104,7 @@ export const useGameStore = create<GameState>()(
 
       buyPrestigeUpgrade: (upgrade, cost) => {
         const state = get();
+        if (state.isGameOver) return;
         if (state.prestigeTokens >= cost && !state.prestigeUpgrades[upgrade]) {
           set({
             prestigeTokens: state.prestigeTokens - cost,
@@ -122,20 +127,43 @@ export const useGameStore = create<GameState>()(
         lastSaved: Date.now(),
         offlineReport: null,
         activeEvent: null,
+        isGameOver: false,
       })),
 
+      resetGame: () => set({
+        money: 0,
+        reputation: 50,
+        health: 100,
+        hygiene: 100,
+        mood: 100,
+        businessLevels: { statue: 0, musician: 0, books: 0, kiosks: 0 },
+        prestigeTokens: 0,
+        prestigeUpgrades: { aura: false, genetics: false, entrepreneur: false },
+        lastSaved: Date.now(),
+        offlineReport: null,
+        activeEvent: null,
+        isGameOver: false,
+      }),
+
       updateStats: (h, hy, m) => set((state) => {
+        if (state.isGameOver) return state;
         const genMod = state.prestigeUpgrades.genetics ? 0.5 : 1.0;
+        const newHealth = Math.max(0, state.health - h * genMod);
+        const isDead = newHealth <= 0;
         return {
-          health: Math.max(0, state.health - h * genMod),
+          health: newHealth,
           hygiene: Math.max(0, state.hygiene - hy * genMod),
-          mood: Math.max(0, Math.min(100, state.mood - m * genMod))
+          mood: Math.max(0, Math.min(100, state.mood - m * genMod)),
+          isGameOver: isDead || state.isGameOver
         };
       }),
 
       setOfflineReport: (report) => set({ offlineReport: report }),
 
-      triggerEvent: (event) => set({ activeEvent: event }),
+      triggerEvent: (event) => set((state) => {
+        if (state.isGameOver) return state;
+        return { activeEvent: event };
+      }),
 
       resolveEvent: (optionAction) => {
         if (typeof optionAction !== 'function') {
@@ -144,12 +172,27 @@ export const useGameStore = create<GameState>()(
         }
         set((state) => {
           const updates = optionAction(state);
-          return { ...updates, activeEvent: null };
+          const nextHealth = updates.health !== undefined ? updates.health : state.health;
+          const isDead = nextHealth <= 0;
+          return {
+            ...updates,
+            health: Math.max(0, nextHealth),
+            isGameOver: isDead || state.isGameOver,
+            activeEvent: null
+          };
         });
       },
 
       tick: (deltaSeconds) => {
         const state = get();
+        if (state.isGameOver) return;
+
+        // Las ganancias pasivas se detienen por completo cuando la salud está en menos de 10%
+        if (state.health < 10) {
+          set({ lastSaved: Date.now() });
+          return;
+        }
+
         let income = 0;
         
         // Calculate income
@@ -163,7 +206,7 @@ export const useGameStore = create<GameState>()(
         // Apply Aura Magnética
         if (state.prestigeUpgrades.aura) income *= 1.5;
 
-        // Apply mood/health modifiers? (Optional, let's keep it simple or slightly debuff if stats are 0)
+        // Apply mood/health modifiers
         let modifier = 1;
         if (state.health < 20) modifier *= 0.5;
         if (state.mood < 20) modifier *= 0.5;
@@ -178,6 +221,7 @@ export const useGameStore = create<GameState>()(
 
       recoverStat: (stat, amount, cost) => {
         const state = get();
+        if (state.isGameOver) return;
         if (state.money >= cost) {
           set({
             money: state.money - cost,
@@ -188,6 +232,7 @@ export const useGameStore = create<GameState>()(
       
       scavenge: () => {
         const state = get();
+        if (state.isGameOver) return;
         // 10% chance to trigger a random scavenge event
         if (Math.random() < 0.10 && !state.activeEvent) {
           const randomEvent = SCAVENGE_EVENTS[Math.floor(Math.random() * SCAVENGE_EVENTS.length)];
