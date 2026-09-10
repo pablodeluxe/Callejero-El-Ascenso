@@ -39,6 +39,7 @@ export interface GameState {
   } | null;
   activeEvent: any | null; // Will define event type later
   isGameOver: boolean;
+  deathReason: 'health' | 'hygiene' | 'mood' | 'reputation' | null;
   
   // Actions
   addMoney: (amount: number) => void;
@@ -71,6 +72,7 @@ export const useGameStore = create<GameState>()(
       offlineReport: null,
       activeEvent: null,
       isGameOver: false,
+      deathReason: null,
 
       addMoney: (amount) => set((state) => ({ money: state.money + amount })),
       
@@ -128,6 +130,7 @@ export const useGameStore = create<GameState>()(
         offlineReport: null,
         activeEvent: null,
         isGameOver: false,
+        deathReason: null,
       })),
 
       resetGame: () => set({
@@ -143,18 +146,30 @@ export const useGameStore = create<GameState>()(
         offlineReport: null,
         activeEvent: null,
         isGameOver: false,
+        deathReason: null,
       }),
 
       updateStats: (h, hy, m) => set((state) => {
         if (state.isGameOver) return state;
         const genMod = state.prestigeUpgrades.genetics ? 0.5 : 1.0;
         const newHealth = Math.max(0, state.health - h * genMod);
-        const isDead = newHealth <= 0;
+        const newHygiene = Math.max(0, state.hygiene - hy * genMod);
+        const newMood = Math.max(0, Math.min(100, state.mood - m * genMod));
+
+        let reason: 'health' | 'hygiene' | 'mood' | 'reputation' | null = null;
+        if (newHealth <= 0) reason = 'health';
+        else if (newHygiene <= 0) reason = 'hygiene';
+        else if (newMood <= 0) reason = 'mood';
+        else if (state.reputation <= 0) reason = 'reputation';
+
+        const isDead = reason !== null;
+
         return {
           health: newHealth,
-          hygiene: Math.max(0, state.hygiene - hy * genMod),
-          mood: Math.max(0, Math.min(100, state.mood - m * genMod)),
-          isGameOver: isDead || state.isGameOver
+          hygiene: newHygiene,
+          mood: newMood,
+          isGameOver: isDead || state.isGameOver,
+          deathReason: isDead ? reason : state.deathReason
         };
       }),
 
@@ -172,12 +187,27 @@ export const useGameStore = create<GameState>()(
         }
         set((state) => {
           const updates = optionAction(state);
-          const nextHealth = updates.health !== undefined ? updates.health : state.health;
-          const isDead = nextHealth <= 0;
+          const nextHealth = updates.health !== undefined ? Math.max(0, updates.health) : state.health;
+          const nextHygiene = updates.hygiene !== undefined ? Math.max(0, updates.hygiene) : state.hygiene;
+          const nextMood = updates.mood !== undefined ? Math.max(0, Math.min(100, updates.mood)) : state.mood;
+          const nextRep = updates.reputation !== undefined ? Math.max(0, Math.min(100, updates.reputation)) : state.reputation;
+
+          let reason: 'health' | 'hygiene' | 'mood' | 'reputation' | null = null;
+          if (nextHealth <= 0) reason = 'health';
+          else if (nextHygiene <= 0) reason = 'hygiene';
+          else if (nextMood <= 0) reason = 'mood';
+          else if (nextRep <= 0) reason = 'reputation';
+
+          const isDead = reason !== null;
+
           return {
             ...updates,
-            health: Math.max(0, nextHealth),
+            health: nextHealth,
+            hygiene: nextHygiene,
+            mood: nextMood,
+            reputation: nextRep,
             isGameOver: isDead || state.isGameOver,
+            deathReason: isDead ? reason : state.deathReason,
             activeEvent: null
           };
         });

@@ -20,7 +20,7 @@ export const SCAVENGE_EVENTS: GameEvent[] = [
     options: [
       {
         label: 'Pelear por defender tu moneda y honor',
-        description: 'Te bates a puñetazos. Sufres golpes (-10 Salud), pero si te mantienes firme ganas +8 Reputación y te quedas la moneda (+$10).',
+        description: 'Te bates a puñetazos. Sufres golpes (-10 Salud), pero si ganas obtienes +8 Reputación y la moneda (+$10). Si pierdes, te roban $5, recibes daño y pierdes reputación (-5).',
         action: (state) => {
           const won = Math.random() < 0.65;
           if (won) {
@@ -34,6 +34,7 @@ export const SCAVENGE_EVENTS: GameEvent[] = [
             return {
               money: Math.max(0, state.money - 5),
               health: Math.max(0, state.health - 15),
+              reputation: Math.max(0, state.reputation - 5),
               mood: Math.max(0, state.mood - 10)
             };
           }
@@ -41,8 +42,9 @@ export const SCAVENGE_EVENTS: GameEvent[] = [
       },
       {
         label: 'Ceder pacíficamente y retirarte',
-        description: 'Evitas el combate. No recibes daño, pero pierdes 5 Ánimo por la frustración.',
+        description: 'Evitas el combate. No recibes daño, pero pierdes un poco de reputación (-3) y 5 Ánimo por la humillación.',
         action: (state) => ({
+          reputation: Math.max(0, state.reputation - 3),
           mood: Math.max(0, state.mood - 5)
         })
       }
