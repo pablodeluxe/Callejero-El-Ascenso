@@ -73,13 +73,21 @@ export default function App() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-white leading-tight">
-              <span className="text-amber-400">Callejero:</span> El Ascenso
+          <div className="flex items-center gap-3">
+            <img
+              src="/app-icon.png"
+              alt="Callejero Icon"
+              className="w-10 h-10 rounded-xl shadow-md border border-amber-500/40 object-cover shrink-0"
+              referrerPolicy="no-referrer"
+            />
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 text-xl font-bold tracking-tight text-white leading-tight">
+                <span className="text-amber-400">Callejero:</span> El Ascenso
+              </div>
+              <p className="text-[11px] text-slate-400 hidden sm:block">
+                De la acera a la cima: sobrevive, progresa y forja tu imperio
+              </p>
             </div>
-            <p className="text-[11px] text-slate-400 hidden sm:block">
-              De la acera a la cima: sobrevive, progresa y forja tu imperio
-            </p>
           </div>
           <PWAInstallButton />
         </div>
