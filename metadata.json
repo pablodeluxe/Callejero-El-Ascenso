@@ -1,0 +1,6 @@
+{
+  "name": "Callejero: El Ascenso",
+  "description": "De la acera a la cima: sobrevive en la ciudad, equilibra tus necesidades básicas de salud, higiene y ánimo, y forja un imperio financiero paso a paso.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
