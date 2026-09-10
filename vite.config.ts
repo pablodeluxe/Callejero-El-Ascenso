@@ -11,6 +11,7 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
+        manifestFilename: 'manifest.json',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
           id: '/',
@@ -20,6 +21,9 @@ export default defineConfig(() => {
           theme_color: '#0f172a',
           background_color: '#0f172a',
           display: 'standalone',
+          orientation: 'portrait',
+          lang: 'es',
+          categories: ['games', 'entertainment', 'simulation'],
           start_url: '/',
           scope: '/',
           icons: [
