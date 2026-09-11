@@ -123,7 +123,9 @@ export interface GameState {
   buyPrestigeUpgrade: (upgrade: 'aura' | 'genetics' | 'entrepreneur', cost: number) => void;
   prestigeReset: (tokensGained: number) => void;
   resetGame: () => void;
+  reviveCharacter: () => void;
   updateStats: (healthDecay: number, hygieneDecay: number, moodDecay: number) => void;
+  applyOfflineStats: (healthDecay: number, hygieneDecay: number, moodDecay: number) => void;
   setOfflineReport: (report: GameState['offlineReport']) => void;
   triggerEvent: (event: any) => void;
   resolveEvent: (option: any) => void;
@@ -262,6 +264,36 @@ export const useGameStore = create<GameState>()(
           deathReason: isDead ? reason : state.deathReason
         };
       }),
+
+      applyOfflineStats: (hDecay, hyDecay, mDecay) => set((state) => {
+        if (state.isGameOver) return state;
+        const genMod = state.prestigeUpgrades.genetics ? 0.5 : 1.0;
+        // OFFLINE SAFETY FLOOR: Offline inattention drops stats to at most 5%
+        // and NEVER kills the character.
+        const newHealth = Math.max(5, state.health - hDecay * genMod);
+        const newHygiene = Math.max(5, state.hygiene - hyDecay * genMod);
+        const newMood = Math.max(5, state.mood - mDecay * genMod);
+
+        return {
+          health: newHealth,
+          hygiene: newHygiene,
+          mood: newMood,
+          isGameOver: false,
+          deathReason: null
+        };
+      }),
+
+      reviveCharacter: () => set((state) => ({
+        money: 0,
+        health: 50,
+        hygiene: 50,
+        mood: 50,
+        reputation: Math.max(25, state.reputation),
+        isGameOver: false,
+        deathReason: null,
+        activeEvent: null,
+        auraStreak: 0
+      })),
 
       setOfflineReport: (report) => set({ offlineReport: report }),
 

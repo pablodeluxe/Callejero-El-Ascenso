@@ -8,12 +8,13 @@
 
 ## 🎮 Funcionalidades Principales
 
-### 1. 🩺 Supervivencia y Muertes Cómicas
-Tus atributos vitales se desgastan de manera continua. Si cualquiera de ellos llega a **0%**, el personaje sufre una muerte cómica y la partida se reinicia desde cero:
+### 1. 🩺 Supervivencia, Muertes Cómicas y Reanimación Callejera
+Tus atributos vitales se desgastan con el tiempo. Si cualquiera de ellos llega a **0%**, el personaje sufre una muerte cómica:
 * **Salud (0%) — ¡Colapso Dramático!**: Te desplomas como un saco de papas tras comer frituras misteriosas y un vahído frente a una paloma.
 * **Higiene (0%) — ¡Alarma Bioquímica!**: Tu aroma a calcetín milenario activa una brigada municipal con trajes NBQ que te rocía con mangueras y te manda rodando al río.
 * **Ánimo (0%) — ¡El Rey de las Palomas!**: Pierdes la cordura urbana, te colocas una caja de pizza en la cabeza como corona y te vas a fundar un imperio aviar con los pájaros.
 * **Reputación (0%) — ¡Desterrado en Contenedor!**: Vecinos y comerciantes se cansan de tus escándalos, te meten en un contenedor de reciclaje con ruedas y te lanzan autopista abajo.
+* **🚑 Reanimación Callejera (Segunda Oportunidad):** En la pantalla de Game Over, puedes optar por entregar todo tu dinero actual a los paramédicos del hospital para **revivir con Salud, Higiene y Ánimo al 50%**, conservando intactos todos tus negocios, reputación acumulada y nivel de Aura.
 * **⛔ Suspensión de Ganancias:** Si la salud cae por debajo del **10%**, tus negocios pasivos se pausan automáticamente.
 * **Recuperación:** Puedes gastar dinero para comprar comida nutritiva, asearte en fuentes públicas y divertirte en el salón de recreativas.
 
@@ -72,9 +73,10 @@ A lo largo de la partida ocurren situaciones fortuitas y dilemas morales:
 
 ---
 
-### 6. 🌙 Progresión Desconectado (Offline Earnings)
-* El juego continúa calculando tus ganancias pasivas y el desgaste de tus atributos incluso cuando la aplicación está cerrada o en segundo plano.
-* Al volver, recibirás un informe detallado con el efectivo acumulado listo para recolectar.
+### 6. 🌙 Progresión Desconectado (Offline) & Ritmo de 12–16 Horas
+* **Ritmo Calibrado para Dormir (12–16 Horas):** El desgaste de las necesidades mientras el juego está cerrado o en segundo plano se reduce sustancialmente para que una barra llena al 100% soporte tranquilamente entre 14 y 16 horas de sueño e inactividad.
+* **Suelo de Seguridad Offline:** El paso del tiempo con el juego cerrado **nunca mata a tu personaje**. Como máximo, reduce los atributos a un estado crítico del 5% para que, al despertar, puedas usar el dinero generado en tus negocios para comer, asearte y recuperarte.
+* **Informe al Despertar:** Al volver a entrar a la aplicación, se te presentará un informe detallado con todo el efectivo acumulado por tus negocios durante tu ausencia.
 
 ---
 

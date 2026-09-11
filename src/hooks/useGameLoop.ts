@@ -259,12 +259,14 @@ export function useGameLoop() {
         
         state.tick(effectiveSeconds);
         
-        const genMod = state.prestigeUpgrades.genetics ? 0.5 : 1.0;
-        const hDecay = (effectiveSeconds / 60) * 0.1 * genMod;
-        const hyDecay = (effectiveSeconds / 60) * 0.2 * genMod; 
-        const mDecay = (effectiveSeconds / 60) * 0.15 * genMod;
+        // Offline decay balanced for a 12-16 hour survival window:
+        // Full bars (100%) now comfortably sustain 14-16 hours of offline sleep.
+        const hDecay = (effectiveSeconds / 60) * 0.05;
+        const hyDecay = (effectiveSeconds / 60) * 0.10; 
+        const mDecay = (effectiveSeconds / 60) * 0.07;
         
-        state.updateStats(hDecay, hyDecay, mDecay);
+        // Safety floor: Offline time NEVER kills the player; clamps at 5% min.
+        state.applyOfflineStats(hDecay, hyDecay, mDecay);
         
         const moneyAfter = useGameStore.getState().money;
         const earnings = moneyAfter - moneyBefore;
@@ -292,8 +294,8 @@ export function useGameLoop() {
       
       state.tick(deltaSeconds);
       
-      // Decay stats slowly
-      state.updateStats(0.01 * deltaSeconds, 0.02 * deltaSeconds, 0.015 * deltaSeconds);
+      // Decay stats gently during active session (~2 to 3 hours between needs)
+      state.updateStats(0.006 * deltaSeconds, 0.012 * deltaSeconds, 0.009 * deltaSeconds);
 
       // Random events
       if (!state.activeEvent && Math.random() < 0.005 * deltaSeconds) {

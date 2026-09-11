@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
-import { HeartCrack, RotateCcw, Skull, DollarSign, Award, Briefcase, Biohazard, Crown, Trash2 } from 'lucide-react';
+import { HeartCrack, RotateCcw, Skull, DollarSign, Award, Briefcase, Biohazard, Crown, Trash2, HeartPulse } from 'lucide-react';
 
 interface DeathDetails {
   badge: string;
@@ -76,6 +76,7 @@ export function GameOverModal() {
   const money = useGameStore((state) => state.money);
   const businessLevels = useGameStore((state) => state.businessLevels);
   const resetGame = useGameStore((state) => state.resetGame);
+  const reviveCharacter = useGameStore((state) => state.reviveCharacter);
 
   const isDead = isGameOver || health <= 0 || hygiene <= 0 || mood <= 0 || reputation <= 0;
 
@@ -159,14 +160,30 @@ export function GameOverModal() {
             </div>
           </div>
 
-          {/* Reset Button */}
-          <button
-            onClick={() => resetGame()}
-            className={`w-full py-3.5 px-4 rounded-xl text-white font-bold text-base shadow-lg transition active:scale-98 flex items-center justify-center gap-2 cursor-pointer ${config.btnStyle}`}
-          >
-            <RotateCcw className="w-5 h-5" />
-            Reiniciar Partida y Empezar de Nuevo
-          </button>
+          {/* Action Buttons: Reanimación Callejera vs Reiniciar */}
+          <div className="w-full space-y-2.5">
+            <button
+              onClick={() => reviveCharacter()}
+              className="w-full py-3 px-4 rounded-xl text-white font-extrabold text-sm shadow-xl transition active:scale-98 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/50 cursor-pointer shadow-emerald-950/60"
+            >
+              <HeartPulse className="w-5 h-5 text-emerald-200 animate-pulse" />
+              <span>
+                🚑 Reanimación Callejera (Coste: ${Math.floor(money).toLocaleString()})
+              </span>
+            </button>
+
+            <p className="text-[11px] text-emerald-400/90 leading-tight text-center px-1">
+              Entregas todo tu dinero actual a los paramédicos del hospital. Revives con <strong>Salud, Higiene y Ánimo al 50%</strong>, conservando tus negocios, reputación y nivel de Aura intactos.
+            </p>
+
+            <button
+              onClick={() => resetGame()}
+              className="w-full mt-2 py-2.5 px-4 rounded-xl text-slate-400 hover:text-white font-bold text-xs bg-slate-950/90 hover:bg-slate-800 border border-slate-800 transition active:scale-98 flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Aceptar el Destino y Reiniciar Partida de Cero
+            </button>
+          </div>
         </div>
       </div>
     </div>
