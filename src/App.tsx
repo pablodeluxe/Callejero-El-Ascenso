@@ -9,7 +9,7 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import { EventModal } from './components/EventModal';
 import { OfflineModal } from './components/OfflineModal';
 import { GameOverModal } from './components/GameOverModal';
-import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame } from 'lucide-react';
+import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame, Github, ExternalLink } from 'lucide-react';
 
 export default function App() {
   useGameLoop(); // Initialize the game loop
@@ -207,6 +207,23 @@ export default function App() {
 
         {/* Prestige System */}
         <PrestigeShop />
+
+        {/* Footer Credits */}
+        <footer id="app-footer" className="mt-14 pt-6 pb-8 border-t border-slate-800/80 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-center gap-2">
+          <span>Desarrollado por <strong className="text-slate-200 font-semibold">pablodeluxe</strong></span>
+          <span className="hidden sm:inline text-slate-700">•</span>
+          <a
+            id="github-repo-link"
+            href="https://github.com/pablodeluxe/callejero-el-ascenso"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-amber-400 hover:text-amber-300 transition-colors font-medium hover:underline underline-offset-4"
+          >
+            <Github className="w-3.5 h-3.5" />
+            <span>Ver repositorio en GitHub</span>
+            <ExternalLink className="w-3 h-3 text-slate-500" />
+          </a>
+        </footer>
         
       </main>
     </div>

@@ -112,8 +112,8 @@ Cuando alcanzas suficiente riqueza, puedes reiniciar tu partida a cambio de **Fi
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
-   cd TU_REPOSITORIO
+   git clone https://github.com/pablodeluxe/callejero-el-ascenso.git
+   cd callejero-el-ascenso
    ```
 
 2. Instala las dependencias:
