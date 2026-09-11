@@ -1,14 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useGameStore, BUSINESSES } from './store/gameStore';
 import { useGameLoop } from './hooks/useGameLoop';
 import { StatsBar } from './components/StatsBar';
+import { AuraWidget } from './components/AuraWidget';
 import { BusinessList } from './components/BusinessList';
 import { PrestigeShop } from './components/PrestigeShop';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { EventModal } from './components/EventModal';
 import { OfflineModal } from './components/OfflineModal';
 import { GameOverModal } from './components/GameOverModal';
-import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon } from 'lucide-react';
+import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame } from 'lucide-react';
 
 export default function App() {
   useGameLoop(); // Initialize the game loop
@@ -16,9 +17,23 @@ export default function App() {
   const money = useGameStore((state) => state.money);
   const health = useGameStore((state) => state.health);
   const mood = useGameStore((state) => state.mood);
+  const auraTier = useGameStore((state) => state.auraTier || 0);
+  const auraFrenzyUntil = useGameStore((state) => state.auraFrenzyUntil || 0);
   const businessLevels = useGameStore((state) => state.businessLevels);
   const prestigeUpgrades = useGameStore((state) => state.prestigeUpgrades);
   const recoverStat = useGameStore((state) => state.recoverStat);
+
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const isFrenzy = now < auraFrenzyUntil;
+  let baseClickGain = 1;
+  if (auraTier >= 3) baseClickGain = 3;
+  else if (auraTier >= 2) baseClickGain = 2;
+  const clickGain = isFrenzy ? baseClickGain * 3 : baseClickGain;
 
   // Compute total passive income per minute and per second
   const { totalIncomePerMin, totalIncomePerSec, isDebuffed, isHealthCritical } = useMemo(() => {
@@ -31,6 +46,10 @@ export default function App() {
     });
 
     if (prestigeUpgrades.aura) incomePerMin *= 1.5;
+
+    // Apply Aura Tier Bonus
+    const AURA_TIER_MULT = [1.0, 1.05, 1.12, 1.20, 1.35];
+    incomePerMin *= (AURA_TIER_MULT[auraTier] || 1.0);
 
     let modifier = 1;
     let debuffed = false;
@@ -56,7 +75,7 @@ export default function App() {
       isDebuffed: debuffed && !critical,
       isHealthCritical: critical
     };
-  }, [businessLevels, prestigeUpgrades, health, mood]);
+  }, [businessLevels, prestigeUpgrades, auraTier, health, mood]);
 
   // Format money: show decimals when under $1,000 so real-time ticks are immediately visible
   const formattedMoney = money < 1000
@@ -96,7 +115,11 @@ export default function App() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         
         {/* Money Display */}
-        <div className="bg-slate-900 rounded-3xl p-8 mb-8 border border-slate-800 flex flex-col items-center justify-center text-center relative overflow-hidden">
+        <div className={`rounded-3xl p-8 mb-8 border transition-all duration-300 flex flex-col items-center justify-center text-center relative overflow-hidden ${
+          isFrenzy 
+            ? 'bg-gradient-to-b from-amber-950/60 to-slate-900 border-amber-500/70 shadow-2xl shadow-amber-950/50 ring-1 ring-amber-400' 
+            : 'bg-slate-900 border-slate-800'
+        }`}>
           <div className="relative z-10 w-full flex flex-col items-center">
             <div className="flex items-center justify-center gap-2 text-slate-400 mb-2 font-semibold tracking-widest uppercase text-xs">
               <Wallet className="w-4 h-4" />
@@ -134,16 +157,25 @@ export default function App() {
             
             <button
               onClick={() => useGameStore.getState().scavenge()}
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-base shadow-lg shadow-blue-500/20 transition active:scale-95 flex items-center gap-2 cursor-pointer"
+              className={`px-8 py-4 rounded-xl font-bold text-base shadow-lg transition active:scale-95 flex items-center gap-2 cursor-pointer ${
+                isFrenzy
+                  ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black shadow-amber-500/40 ring-2 ring-amber-300 animate-pulse'
+                  : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20'
+              }`}
             >
-              <Wallet className="w-5 h-5" />
-              Buscar Monedas (+$1)
+              {isFrenzy ? <Flame className="w-5 h-5 text-slate-950 animate-bounce" /> : <Wallet className="w-5 h-5" />}
+              <span>
+                {isFrenzy ? `¡Buscar Monedas (+${clickGain} FRENESÍ x3)!` : `Buscar Monedas (+${clickGain})`}
+              </span>
             </button>
           </div>
         </div>
 
         {/* Stats */}
         <StatsBar />
+
+        {/* Aura & Estilo Urbana Widget */}
+        <AuraWidget />
 
         {/* Quick Actions */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-3">

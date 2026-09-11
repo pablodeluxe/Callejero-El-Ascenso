@@ -212,5 +212,113 @@ export const SCAVENGE_EVENTS: GameEvent[] = [
         })
       }
     ]
+  },
+  {
+    id: 'coffee_cup_aura',
+    title: '¡La Taza de Café en el Aire!',
+    description: 'Un ejecutivo apresurado con traje de marca tropieza a tu lado. Su capuchino hirviendo sale despedido volando por los aires trazando una parábola sobre la multitud.',
+    options: [
+      {
+        label: 'Atraparlo en el aire con una sola mano sin mirar (60% de éxito)',
+        description: 'Todo o nada por el clip épico. Éxito: +2,500 Aura, +10 Reputación y $50 de propina maravillado. Fallo: -3,000 Aura, quemadura (-10 Salud), te empapas de café (-25 Higiene) y la gente se burla.',
+        action: (state) => {
+          const success = Math.random() < 0.60;
+          if (success) {
+            return {
+              aura: (state.aura || 0) + 2500,
+              reputation: Math.min(100, state.reputation + 10),
+              mood: Math.min(100, state.mood + 15),
+              money: state.money + 50
+            };
+          } else {
+            return {
+              aura: (state.aura || 0) - 3000,
+              health: Math.max(0, state.health - 10),
+              hygiene: Math.max(0, state.hygiene - 25),
+              mood: Math.max(0, state.mood - 15)
+            };
+          }
+        }
+      },
+      {
+        label: 'Esquivarlo con compostura indiferente (+200 Aura seguro)',
+        description: 'Das un paso milimétrico con frialdad absoluta mientras el vaso se estrella en el asfalto. Conservas tu dignidad intacta.',
+        action: (state) => ({
+          aura: (state.aura || 0) + 200,
+          mood: Math.min(100, state.mood + 5)
+        })
+      }
+    ]
+  },
+  {
+    id: 'stare_down_aura',
+    title: 'El Duelo de Miradas Callejero',
+    description: 'Un tipo intimidante con chaqueta de cuero y gafas oscuras se para frente a ti en la acera y te clava una mirada desafiante.',
+    options: [
+      {
+        label: 'Sostenerle la mirada con presencia implacable (55% de ganar)',
+        description: 'Duelo de pura aura. Si aguantas: +500 Aura, +8 Reputación y el tipo baja la vista con respeto. Si pestañeas: -500 Aura y -5 Reputación.',
+        action: (state) => {
+          const win = Math.random() < 0.55;
+          if (win) {
+            return {
+              aura: (state.aura || 0) + 500,
+              reputation: Math.min(100, state.reputation + 8),
+              mood: Math.min(100, state.mood + 10)
+            };
+          } else {
+            return {
+              aura: (state.aura || 0) - 500,
+              reputation: Math.max(0, state.reputation - 5),
+              mood: Math.max(0, state.mood - 8)
+            };
+          }
+        }
+      },
+      {
+        label: 'Saludar con un guiño de confianza (+100 Aura)',
+        description: 'Rompes la tensión con carisma callejero sin entrar en el juego del conflicto.',
+        action: (state) => ({
+          aura: (state.aura || 0) + 100,
+          mood: Math.min(100, state.mood + 5)
+        })
+      }
+    ]
+  },
+  {
+    id: 'pose_extreme_fail',
+    title: '¡Pose Extrema en la Baranda!',
+    description: 'Para ganar aura callejera y conseguir un video viral, intentas hacer equilibrio con un solo pie sobre la baranda de la escalera del metro.',
+    options: [
+      {
+        label: 'Aterrizar con voltereta de superhéroe (40% de éxito)',
+        description: 'Arriesgas tu dignidad y tu cuerpo. Éxito: +400 Aura y +10 Reputación. Fallo: -600 Aura, te caes estrepitosamente rodando por la escalera (-15 Salud, -20 Higiene) y la multitud se ríe.',
+        action: (state) => {
+          const success = Math.random() < 0.40;
+          if (success) {
+            return {
+              aura: (state.aura || 0) + 400,
+              reputation: Math.min(100, state.reputation + 10),
+              mood: Math.min(100, state.mood + 10)
+            };
+          } else {
+            return {
+              aura: (state.aura || 0) - 600,
+              health: Math.max(0, state.health - 15),
+              hygiene: Math.max(0, state.hygiene - 20),
+              mood: Math.max(0, state.mood - 10)
+            };
+          }
+        }
+      },
+      {
+        label: 'Bajarte con calma disimulando (+30 Aura seguro)',
+        description: 'Decides que tu seguridad y dignidad valen más. Bajas con paso firme sin llamar la atención.',
+        action: (state) => ({
+          aura: (state.aura || 0) + 30,
+          mood: Math.min(100, state.mood + 2)
+        })
+      }
+    ]
   }
 ];
