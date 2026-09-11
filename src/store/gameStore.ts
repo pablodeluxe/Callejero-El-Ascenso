@@ -125,7 +125,7 @@ export interface GameState {
   resetGame: () => void;
   reviveCharacter: () => void;
   updateStats: (healthDecay: number, hygieneDecay: number, moodDecay: number) => void;
-  applyOfflineStats: (healthDecay: number, hygieneDecay: number, moodDecay: number) => void;
+  applyOfflineStats: (healthDecay: number, hygieneDecay: number, moodDecay: number, elapsedSeconds: number) => void;
   setOfflineReport: (report: GameState['offlineReport']) => void;
   triggerEvent: (event: any) => void;
   resolveEvent: (option: any) => void;
@@ -265,29 +265,53 @@ export const useGameStore = create<GameState>()(
         };
       }),
 
-      applyOfflineStats: (hDecay, hyDecay, mDecay) => set((state) => {
+      applyOfflineStats: (hDecay, hyDecay, mDecay, elapsedSeconds) => set((state) => {
         if (state.isGameOver) return state;
         const genMod = state.prestigeUpgrades.genetics ? 0.5 : 1.0;
-        // OFFLINE SAFETY FLOOR: Offline inattention drops stats to at most 5%
-        // and NEVER kills the character.
-        const newHealth = Math.max(5, state.health - hDecay * genMod);
-        const newHygiene = Math.max(5, state.hygiene - hyDecay * genMod);
-        const newMood = Math.max(5, state.mood - mDecay * genMod);
+        const isWithin14Hours = elapsedSeconds <= 14 * 3600;
 
-        return {
-          health: newHealth,
-          hygiene: newHygiene,
-          mood: newMood,
-          isGameOver: false,
-          deathReason: null
-        };
+        if (isWithin14Hours) {
+          // Ventana de protección de sueño (<= 14h): suelo mínimo al 5%, nunca muere mientras duerme
+          const newHealth = Math.max(5, state.health - hDecay * genMod);
+          const newHygiene = Math.max(5, state.hygiene - hyDecay * genMod);
+          const newMood = Math.max(5, state.mood - mDecay * genMod);
+
+          return {
+            health: newHealth,
+            hygiene: newHygiene,
+            mood: newMood,
+            isGameOver: false,
+            deathReason: null
+          };
+        } else {
+          // Inactividad superior a 14h: sin suelo de seguridad, los valores caen a 0 y causan muerte cómica
+          const newHealth = Math.max(0, state.health - hDecay * genMod);
+          const newHygiene = Math.max(0, state.hygiene - hyDecay * genMod);
+          const newMood = Math.max(0, state.mood - mDecay * genMod);
+
+          let reason: 'health' | 'hygiene' | 'mood' | 'reputation' | null = null;
+          if (newHealth <= 0) reason = 'health';
+          else if (newHygiene <= 0) reason = 'hygiene';
+          else if (newMood <= 0) reason = 'mood';
+          else if (state.reputation <= 0) reason = 'reputation';
+
+          const isDead = reason !== null;
+
+          return {
+            health: newHealth,
+            hygiene: newHygiene,
+            mood: newMood,
+            isGameOver: isDead || state.isGameOver,
+            deathReason: isDead ? reason : state.deathReason
+          };
+        }
       }),
 
       reviveCharacter: () => set((state) => ({
         money: 0,
-        health: 50,
-        hygiene: 50,
-        mood: 50,
+        health: 25,
+        hygiene: 25,
+        mood: 25,
         reputation: Math.max(25, state.reputation),
         isGameOver: false,
         deathReason: null,

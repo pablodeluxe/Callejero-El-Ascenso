@@ -2,9 +2,10 @@ import { useGameStore } from '../store/gameStore';
 
 export function OfflineModal() {
   const report = useGameStore((state) => state.offlineReport);
+  const isGameOver = useGameStore((state) => state.isGameOver);
   const setOfflineReport = useGameStore((state) => state.setOfflineReport);
 
-  if (!report) return null;
+  if (!report || isGameOver) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">

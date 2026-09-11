@@ -265,8 +265,8 @@ export function useGameLoop() {
         const hyDecay = (effectiveSeconds / 60) * 0.10; 
         const mDecay = (effectiveSeconds / 60) * 0.07;
         
-        // Safety floor: Offline time NEVER kills the player; clamps at 5% min.
-        state.applyOfflineStats(hDecay, hyDecay, mDecay);
+        // Safety floor active up to 14 hours; beyond 14h of inactivity, stats drop to 0 and death occurs.
+        state.applyOfflineStats(hDecay, hyDecay, mDecay, elapsedSeconds);
         
         const moneyAfter = useGameStore.getState().money;
         const earnings = moneyAfter - moneyBefore;
