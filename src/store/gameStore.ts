@@ -392,8 +392,8 @@ export const useGameStore = create<GameState>()(
 
         const newMood = Math.max(0, state.mood - 1);
 
-        // 14% chance of mishap / pose fail: loses aura and breaks streak!
-        if (Math.random() < 0.14) {
+        // 4% chance of mishap / pose fail: loses aura and breaks streak!
+        if (Math.random() < 0.04) {
           const fail = POSE_FAILS[Math.floor(Math.random() * POSE_FAILS.length)];
           set({
             aura: (state.aura || 0) - fail.loss,

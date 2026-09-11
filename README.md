@@ -1,8 +1,8 @@
 # Callejero: El Ascenso 🌆
 
-> **De la acera a la cima:** sobrevive en la ciudad, equilibra tus necesidades básicas de salud, higiene y ánimo, y forja un imperio financiero paso a paso.
+> **De la acera a la cima:** sobrevive en la ciudad, equilibra tus necesidades básicas de salud, higiene y ánimo, forja tu imperio financiero y domina el respeto urbano con tu Aura callejera.
 
-*Callejero: El Ascenso* es un juego de gestión y progresión urbana (*incremental / idle game*) donde comienzas sin un solo centavo en la calle y debes tomar decisiones estratégicas para mantenerte con vida, ganar reputación y montar negocios que generen ingresos continuos.
+*Callejero: El Ascenso* es un juego de gestión y progresión urbana (*incremental / idle game*) donde comienzas sin un solo centavo en la calle y debes tomar decisiones estratégicas para mantenerte con vida, ganar reputación, acumular estilo y montar negocios que generen ingresos continuos.
 
 ---
 
@@ -19,8 +19,32 @@ Tus atributos vitales se desgastan de manera continua. Si cualquiera de ellos ll
 
 ---
 
-### 2. 💼 Economía Urbana y Negocios Pasivos
-* **Acción Manual:** Pide monedas o busca en las calles para ganar tus primeros dólares y encontrar oportunidades.
+### 2. ✨ Sistema de Aura Urbana, Racha y Modo Frenesí
+El Aura representa tu carisma, compostura y respeto en las calles:
+* **Puntos de Aura:** Se acumulan mediante eventos arriesgados, compostura callejera y poses activas. También pueden volverse negativos si sufres humillaciones públicas.
+* **🕺 Farmear Aura («Tirar Pose»):**
+  * Otorga entre **+8 y +15 de Aura** por pose a cambio de un 1% de Ánimo.
+  * **Barra de Racha (1 a 10):** Cada pose exitosa suma a una racha de 10 puntos.
+  * **Riesgo de Bloopers (4% de probabilidad):** Un 4% de las poses puede salir mal (tropezar con baldosas flojas, parpadear raro al guiñar, que te ladre un perro o te cruja la espalda), provocando una pérdida de entre **-25 y -60 Aura** y reiniciando la racha a 0.
+* **🔥 Modo Aura Máxima (Frenesí x3):**
+  * Al completar los 10 puntos de racha, se desata el **Modo Aura Máxima** durante 12 segundos (o 16s con Nivel 4 de Aura).
+  * Durante el frenesí, el botón **«Buscar Monedas»** arde con llamas doradas y **triplica (x3)** todo el efectivo recolectado por clic.
+  * Al culminar, entra en un período de descanso/enfriamiento de 45 segundos.
+
+---
+
+### 3. 🛍️ Tienda de Estilo & Auras
+Gasta tus puntos de Aura en desbloquear rangos de presencia urbana con multiplicadores permanentes y efectos visuales de resplandor neón:
+* **Nivel 0 - Novato sin Aura (Gratis):** Sin bonificaciones activas, invisible entre la multitud.
+* **Nivel 1 - Resplandor Callejero (1,000 Aura):** +5% a todos los ingresos pasivos y resplandor ámbar.
+* **Nivel 2 - Estilo Neón Nocturno (3,500 Aura):** +12% a ingresos pasivos, +$1 extra base en recolección manual y resplandor cian.
+* **Nivel 3 - Aura de Magnate Callejero (8,000 Aura):** +20% a ingresos pasivos, +$2 extra base en recolección manual y resplandor violeta.
+* **Nivel 4 - Aura Divina Celestial (20,000 Aura):** +35% a todos los ingresos pasivos, resplandor celestial y el Modo Frenesí dura 16 segundos en lugar de 12.
+
+---
+
+### 4. 💼 Economía Urbana y Negocios Pasivos
+* **Acción Manual:** Pide monedas o busca en las calles para ganar tus primeros dólares y encontrar oportunidades (beneficiándose de bonos de nivel de aura y frenesí x3).
 * **Negocios Desbloqueables y Mejorables:**
   * 🎭 **Estatua Viviente**: Ingresos base para comenzar tu camino.
   * 🎸 **Músico Callejero**: Ritmo y propinas de los transeúntes.
@@ -31,21 +55,29 @@ Tus atributos vitales se desgastan de manera continua. Si cualquiera de ellos ll
 
 ---
 
-### 3. 🎲 Eventos Callejeros Dinámicos
+### 5. 🎲 Eventos Callejeros Dinámicos
 A lo largo de la partida ocurren situaciones fortuitas y dilemas morales:
-* Inspecciones policiales o municipales donde puedes pagar sobornos o intentar negociar.
-* Rescate de animales callejeros, apuestas de dados y ofertas clandestinas.
-* **Validación de Fondos:** Las opciones que exigen un pago (como sobornos o gastos médicos) se bloquean automáticamente con una advertencia si no cuentas con el dinero suficiente.
+* **¡La Taza de Café en el Aire!:** Un ejecutivo tropieza y su café caliente vuela por los aires.
+  * *Arriesgarse (60% éxito):* Atraparlo sin mirar (+2,500 Aura, +10 Reputación, $50 propina) o fallar estrepitosamente (-3,000 Aura, -10 Salud, -25 Higiene).
+  * *Esquivar con clase:* +200 Aura garantizados y dignidad intacta.
+* **El Duelo de Miradas Callejero:** Duelo de presencia frente a un tipo intimidante.
+  * *Sostener la mirada (55% éxito):* +500 Aura y +8 Reputación (derrota: -500 Aura, -5 Reputación).
+  * *Saludar con guiño de confianza:* +100 Aura seguro.
+* **¡Pose Extrema en la Baranda!:** Pirueta en la baranda del metro.
+  * *Aterrizar de superhéroe (40% éxito):* +400 Aura y +10 Reputación (fallo: -600 Aura, -15 Salud, -20 Higiene).
+  * *Bajarse disimulando:* +30 Aura seguro.
+* **Eventos tradicionales:** Inspecciones policiales, rescate de animales callejeros, apuestas de dados y ofertas clandestinas.
+* **Validación de Fondos:** Las opciones que exigen un pago (como sobornos o gastos médicos) se bloquean automáticamente si no cuentas con el dinero suficiente.
 
 ---
 
-### 4. 🌙 Progresión Desconectado (Offline Earnings)
+### 6. 🌙 Progresión Desconectado (Offline Earnings)
 * El juego continúa calculando tus ganancias pasivas y el desgaste de tus atributos incluso cuando la aplicación está cerrada o en segundo plano.
 * Al volver, recibirás un informe detallado con el efectivo acumulado listo para recolectar.
 
 ---
 
-### 5. 🏆 Sistema de Prestigio (Renacer Urbano)
+### 7. 🏆 Sistema de Prestigio (Renacer Urbano)
 Cuando alcanzas suficiente riqueza, puedes reiniciar tu partida a cambio de **Fichas de Prestigio** para desbloquear ventajas permanentes:
 * **Aura Magnética:** +50% a todos los ingresos pasivos.
 * **Genética Callejera:** Reduce un 50% la velocidad con la que se desgastan la salud, higiene y ánimo.
@@ -53,7 +85,7 @@ Cuando alcanzas suficiente riqueza, puedes reiniciar tu partida a cambio de **Fi
 
 ---
 
-### 6. 📱 Progressive Web App (PWA)
+### 8. 📱 Progressive Web App (PWA)
 * Totalmente adaptable para dispositivos móviles, tablets y escritorio.
 * Instalable directamente en Android e iOS como una aplicación nativa.
 * Soporte para ejecución sin conexión a internet (*offline-first*).
