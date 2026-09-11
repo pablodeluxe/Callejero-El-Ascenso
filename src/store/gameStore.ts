@@ -97,6 +97,7 @@ export interface GameState {
   auraFrenzyUntil: number;
   auraCooldownUntil: number;
   auraTier: number;
+  poseClickCount: number;
   businessLevels: Record<string, number>;
   prestigeTokens: number;
   prestigeUpgrades: {
@@ -147,6 +148,7 @@ export const useGameStore = create<GameState>()(
       auraFrenzyUntil: 0,
       auraCooldownUntil: 0,
       auraTier: 0,
+      poseClickCount: 0,
       businessLevels: { statue: 0, musician: 0, books: 0, kiosks: 0 },
       prestigeTokens: 0,
       prestigeUpgrades: { aura: false, genetics: false, entrepreneur: false },
@@ -226,6 +228,7 @@ export const useGameStore = create<GameState>()(
         auraFrenzyUntil: 0,
         auraCooldownUntil: 0,
         auraTier: 0,
+        poseClickCount: 0,
         businessLevels: { statue: 0, musician: 0, books: 0, kiosks: 0 },
         prestigeTokens: 0,
         prestigeUpgrades: { aura: false, genetics: false, entrepreneur: false },
@@ -391,6 +394,9 @@ export const useGameStore = create<GameState>()(
         }
 
         const newMood = Math.max(0, state.mood - 1);
+        const newPoseClickCount = (state.poseClickCount || 0) + 1;
+        const addsRep = newPoseClickCount % 3 === 0;
+        const newReputation = addsRep ? Math.min(100, state.reputation + 1) : state.reputation;
 
         // 4% chance of mishap / pose fail: loses aura and breaks streak!
         if (Math.random() < 0.04) {
@@ -398,7 +404,9 @@ export const useGameStore = create<GameState>()(
           set({
             aura: (state.aura || 0) - fail.loss,
             mood: newMood,
-            auraStreak: 0
+            auraStreak: 0,
+            reputation: newReputation,
+            poseClickCount: newPoseClickCount
           });
           return {
             success: false,
@@ -421,16 +429,32 @@ export const useGameStore = create<GameState>()(
             mood: newMood,
             auraStreak: 0,
             auraFrenzyUntil: frenzyUntil,
-            auraCooldownUntil: cooldownUntil
+            auraCooldownUntil: cooldownUntil,
+            reputation: newReputation,
+            poseClickCount: newPoseClickCount
           });
-          return { success: true, message: '¡AURA MÁXIMA ACTIVADA! x3 Dinero por 12s', isFrenzy: true };
+          return {
+            success: true,
+            message: addsRep
+              ? '¡AURA MÁXIMA ACTIVADA! +1 Reputación y x3 Dinero por 12s'
+              : '¡AURA MÁXIMA ACTIVADA! x3 Dinero por 12s',
+            isFrenzy: true
+          };
         } else {
           set({
             aura: (state.aura || 0) + gain,
             mood: newMood,
-            auraStreak: newStreak
+            auraStreak: newStreak,
+            reputation: newReputation,
+            poseClickCount: newPoseClickCount
           });
-          return { success: true, message: `+${gain} Aura (Racha: ${newStreak}/10)`, isFrenzy: false };
+          return {
+            success: true,
+            message: addsRep
+              ? `+${gain} Aura y +1 Reputación (Racha: ${newStreak}/10)`
+              : `+${gain} Aura (Racha: ${newStreak}/10)`,
+            isFrenzy: false
+          };
         }
       },
 

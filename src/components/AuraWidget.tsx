@@ -120,9 +120,9 @@ export function AuraWidget() {
       <div className="bg-slate-950/60 rounded-xl p-3.5 border border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 flex-wrap">
               <span>🕺 Farmear Aura (Tirar Pose)</span>
-              <span className="text-[10px] text-slate-500 font-normal">(-1% Ánimo)</span>
+              <span className="text-[10px] text-slate-500 font-normal">(-1% Ánimo • +1 Rep c/3 clics)</span>
             </span>
             <span className="text-[11px] font-bold text-amber-400">
               {isFrenzy ? "Frenesí Activo" : `Racha: ${auraStreak}/10`}

@@ -24,6 +24,7 @@ El Aura representa tu carisma, compostura y respeto en las calles:
 * **Puntos de Aura:** Se acumulan mediante eventos arriesgados, compostura callejera y poses activas. También pueden volverse negativos si sufres humillaciones públicas.
 * **🕺 Farmear Aura («Tirar Pose»):**
   * Otorga entre **+8 y +15 de Aura** por pose a cambio de un 1% de Ánimo.
+  * **Ganancia de Reputación:** Cada **3 clics** de tirar pose te suma **+1 de Reputación** urbana automáticamente.
   * **Barra de Racha (1 a 10):** Cada pose exitosa suma a una racha de 10 puntos.
   * **Riesgo de Bloopers (4% de probabilidad):** Un 4% de las poses puede salir mal (tropezar con baldosas flojas, parpadear raro al guiñar, que te ladre un perro o te cruja la espalda), provocando una pérdida de entre **-25 y -60 Aura** y reiniciando la racha a 0.
 * **🔥 Modo Aura Máxima (Frenesí x3):**
