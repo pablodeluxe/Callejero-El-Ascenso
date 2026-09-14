@@ -45,7 +45,7 @@ Gasta tus puntos de Aura en desbloquear rangos de presencia urbana con multiplic
 
 ---
 
-### 4. 💼 Economía Urbana y Negocios Pasivos
+### 4. 💼 Economía Urbana, Negocios Pasivos y Balance de Progresión
 * **Acción Manual:** Pide monedas o busca en las calles para ganar tus primeros dólares y encontrar oportunidades (beneficiándose de bonos de nivel de aura y frenesí x3).
 * **Negocios Desbloqueables y Mejorables:**
   * 🎭 **Estatua Viviente**: Ingresos base para comenzar tu camino.
@@ -54,6 +54,11 @@ Gasta tus puntos de Aura en desbloquear rangos de presencia urbana con multiplic
   * 🏪 **Cadena de Kioscos**: Venta masiva y distribución minorista.
 * **Monitoreo Financiero:** Visualiza tus ingresos pasivos desglosados en tiempo real por minuto (`$/min`) y por segundo (`$/s`).
 * **Penalización por Descuido:** Si tu salud o ánimo caen por debajo del 20%, tus ingresos sufren una penalización del 50%.
+* **⚖️ Mecánicas de Dificultad y Balance de Progresión:**
+  * **Opción 1: Costo de Vida e Inflación (*Lifestyle Creep*):** A mayor riqueza y negocios, los costos de recuperación básica (*Comer*, *Ducharse*, *Ocio*) escalan un 1.5% de tu flujo de ingresos por minuto.
+  * **Opción 2: Eventos de Riesgo Proporcional:** Inspecciones sorpresa de Bromatología, auditorías de espacio público (AFIP callejera) y asambleas del gremio con multas porcentuales sobre tu patrimonio.
+  * **Opción 4: Curvas Exponenciales, Soft-Caps y Habilitaciones:** Multiplicadores de coste aumentados (`1.09` - `1.20`), escalado exponencial pasado el nivel 25, y necesidad de tramitar **Habilitaciones Municipales** en los niveles 25, 50, 75 y 100 para seguir subiendo de nivel.
+  * **Opción 5: Desgaste de Suministros y Mantenimiento:** Los negocios consumen insumos (*Maquillaje*, *Cuerdas*, *Inventario*, *Mercadería*). Si los suministros se agotan al 0%, el rendimiento se desploma al 30% (-70% de penalización) hasta reponer insumos individual o globalmente.
 
 ---
 

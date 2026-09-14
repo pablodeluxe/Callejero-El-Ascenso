@@ -19,14 +19,79 @@ export interface BusinessConfig {
   baseCost: number;
   multiplier: number;
   baseIncome: number;
+  suppliesName: string;
 }
 
 export const BUSINESSES: Record<string, BusinessConfig> = {
-  statue: { id: 'statue', name: 'Estatua Humana', baseCost: 50, multiplier: 1.07, baseIncome: 1 },
-  musician: { id: 'musician', name: 'Músico Subterráneo', baseCost: 300, multiplier: 1.10, baseIncome: 5 },
-  books: { id: 'books', name: 'Puesto de Libros', baseCost: 1500, multiplier: 1.12, baseIncome: 30 },
-  kiosks: { id: 'kiosks', name: 'Red de Quioscos', baseCost: 10000, multiplier: 1.15, baseIncome: 150 },
+  statue: { id: 'statue', name: 'Estatua Humana', baseCost: 50, multiplier: 1.09, baseIncome: 1, suppliesName: 'Maquillaje y Disfraz' },
+  musician: { id: 'musician', name: 'Músico Subterráneo', baseCost: 300, multiplier: 1.13, baseIncome: 5, suppliesName: 'Cuerdas e Instrumentos' },
+  books: { id: 'books', name: 'Puesto de Libros', baseCost: 1500, multiplier: 1.16, baseIncome: 30, suppliesName: 'Inventario y Fletes' },
+  kiosks: { id: 'kiosks', name: 'Red de Quioscos', baseCost: 10000, multiplier: 1.20, baseIncome: 150, suppliesName: 'Mercadería y Reposición' },
 };
+
+export const BUSINESS_LICENSE_TIERS = [25, 50, 75, 100];
+export const BUSINESS_LICENSE_COSTS: Record<string, number[]> = {
+  statue: [800, 6000, 45000, 300000],
+  musician: [4500, 35000, 250000, 1800000],
+  books: [22000, 180000, 1200000, 8000000],
+  kiosks: [150000, 1100000, 7500000, 50000000],
+};
+
+export function getBusinessUpgradeCost(
+  id: string,
+  currentLevel: number,
+  hasEntrepreneur: boolean
+): number {
+  const config = BUSINESSES[id];
+  if (!config) return 0;
+  const baseCost = hasEntrepreneur ? config.baseCost * 0.75 : config.baseCost;
+  // Soft cap: past level 25, exponential cost increases
+  const softCapMultiplier = currentLevel > 25 ? Math.pow(1.02, currentLevel - 25) : 1;
+  return Math.floor(baseCost * Math.pow(config.multiplier, currentLevel) * softCapMultiplier);
+}
+
+export function getBusinessRestockCost(id: string, level: number): number {
+  if (level <= 0) return 0;
+  const base = id === 'statue' ? 10 : id === 'musician' ? 30 : id === 'books' ? 100 : 400;
+  return Math.max(10, Math.floor(base + level * (base * 0.15)));
+}
+
+export function getLifestyleInflation(
+  businessLevels: Record<string, number>,
+  businessSupplies: Record<string, number>,
+  hasPrestigeAura: boolean,
+  auraTier: number
+): number {
+  let incomePerMin = 0;
+  Object.entries(businessLevels || {}).forEach(([id, level]) => {
+    const config = BUSINESSES[id];
+    if (config && level > 0) {
+      const sup = businessSupplies?.[id] ?? 100;
+      const supMod = sup <= 0 ? 0.3 : 1.0;
+      incomePerMin += config.baseIncome * level * supMod;
+    }
+  });
+  if (hasPrestigeAura) incomePerMin *= 1.5;
+  const AURA_TIER_MULT = [1.0, 1.05, 1.12, 1.20, 1.35];
+  incomePerMin *= (AURA_TIER_MULT[auraTier] || 1.0);
+
+  return Math.floor(incomePerMin * 0.015);
+}
+
+export function getRecoveryCosts(
+  businessLevels: Record<string, number>,
+  businessSupplies: Record<string, number>,
+  hasPrestigeAura: boolean,
+  auraTier: number
+) {
+  const inflation = getLifestyleInflation(businessLevels, businessSupplies, hasPrestigeAura, auraTier);
+  return {
+    inflation,
+    health: 20 + inflation,
+    hygiene: 15 + Math.floor(inflation * 0.75),
+    mood: 30 + Math.floor(inflation * 1.25)
+  };
+}
 
 export interface AuraTierInfo {
   tier: number;
@@ -110,6 +175,8 @@ export interface GameState {
   auraTier: number;
   poseClickCount: number;
   businessLevels: Record<string, number>;
+  businessSupplies: Record<string, number>;
+  businessLicenses: Record<string, number>;
   prestigeTokens: number;
   prestigeUpgrades: {
     aura: boolean; // +50% global income
@@ -132,6 +199,9 @@ export interface GameState {
   addMoney: (amount: number) => void;
   spendMoney: (amount: number) => boolean;
   buyBusiness: (id: string) => void;
+  buyBusinessLicense: (id: string) => boolean;
+  restockBusiness: (id: string) => boolean;
+  restockAllBusinesses: () => { success: boolean; totalCost: number; count: number };
   buyPrestigeUpgrade: (upgrade: 'aura' | 'genetics' | 'entrepreneur', cost: number) => void;
   prestigeReset: (tokensGained: number) => void;
   resetGame: () => void;
@@ -142,7 +212,7 @@ export interface GameState {
   triggerEvent: (event: any) => void;
   resolveEvent: (option: any) => void;
   tick: (deltaSeconds: number) => void;
-  recoverStat: (stat: 'health' | 'hygiene' | 'mood', amount: number, cost: number) => void;
+  recoverStat: (stat: 'health' | 'hygiene' | 'mood', amount: number, cost?: number) => void;
   scavenge: () => void;
   poseForAura: () => { success: boolean; message: string; isFrenzy: boolean; isFail?: boolean };
   buyAuraTier: (tier: number) => boolean;
@@ -167,6 +237,8 @@ export const useGameStore = create<GameState>()(
       auraTier: 0,
       poseClickCount: 0,
       businessLevels: { statue: 0, musician: 0, books: 0, kiosks: 0 },
+      businessSupplies: { statue: 100, musician: 100, books: 100, kiosks: 100 },
+      businessLicenses: { statue: 0, musician: 0, books: 0, kiosks: 0 },
       prestigeTokens: 0,
       prestigeUpgrades: { aura: false, genetics: false, entrepreneur: false },
       lastSaved: Date.now(),
@@ -191,9 +263,18 @@ export const useGameStore = create<GameState>()(
         const state = get();
         if (state.isGameOver) return;
         const config = BUSINESSES[id];
+        if (!config) return;
+        
         const currentLevel = state.businessLevels[id] || 0;
-        const baseCost = state.prestigeUpgrades.entrepreneur ? config.baseCost * 0.75 : config.baseCost;
-        const cost = Math.floor(baseCost * Math.pow(config.multiplier, currentLevel));
+        const licenseTier = state.businessLicenses?.[id] || 0;
+        const maxLevelAllowed = (licenseTier + 1) * 25;
+
+        // Check license cap
+        if (currentLevel >= maxLevelAllowed) {
+          return;
+        }
+
+        const cost = getBusinessUpgradeCost(id, currentLevel, state.prestigeUpgrades.entrepreneur);
         
         if (state.money >= cost) {
           set({
@@ -201,9 +282,83 @@ export const useGameStore = create<GameState>()(
             businessLevels: {
               ...state.businessLevels,
               [id]: currentLevel + 1
+            },
+            businessSupplies: {
+              ...state.businessSupplies,
+              [id]: state.businessSupplies?.[id] !== undefined ? state.businessSupplies[id] : 100
             }
           });
         }
+      },
+
+      buyBusinessLicense: (id) => {
+        const state = get();
+        if (state.isGameOver) return false;
+        const currentTier = state.businessLicenses?.[id] || 0;
+        const tierCosts = BUSINESS_LICENSE_COSTS[id] || [];
+        const cost = tierCosts[currentTier];
+
+        if (cost === undefined) return false;
+
+        if (state.money >= cost) {
+          set({
+            money: state.money - cost,
+            businessLicenses: {
+              ...(state.businessLicenses || {}),
+              [id]: currentTier + 1
+            }
+          });
+          return true;
+        }
+        return false;
+      },
+
+      restockBusiness: (id) => {
+        const state = get();
+        if (state.isGameOver) return false;
+        const level = state.businessLevels[id] || 0;
+        if (level <= 0) return false;
+
+        const cost = getBusinessRestockCost(id, level);
+        if (state.money >= cost) {
+          set({
+            money: state.money - cost,
+            businessSupplies: {
+              ...(state.businessSupplies || {}),
+              [id]: 100
+            }
+          });
+          return true;
+        }
+        return false;
+      },
+
+      restockAllBusinesses: () => {
+        const state = get();
+        if (state.isGameOver) return { success: false, totalCost: 0, count: 0 };
+
+        let totalCost = 0;
+        let count = 0;
+        const newSupplies = { ...(state.businessSupplies || {}) };
+
+        Object.entries(state.businessLevels).forEach(([id, level]) => {
+          if (level > 0 && (newSupplies[id] ?? 100) < 100) {
+            totalCost += getBusinessRestockCost(id, level);
+            newSupplies[id] = 100;
+            count++;
+          }
+        });
+
+        if (count === 0) return { success: true, totalCost: 0, count: 0 };
+
+        if (state.money >= totalCost) {
+          set({
+            money: state.money - totalCost,
+            businessSupplies: newSupplies
+          });
+          return { success: true, totalCost, count };
+        }
+        return { success: false, totalCost, count };
       },
 
       buyPrestigeUpgrade: (upgrade, cost) => {
@@ -227,6 +382,8 @@ export const useGameStore = create<GameState>()(
         hygiene: 100,
         mood: 100,
         businessLevels: { statue: 0, musician: 0, books: 0, kiosks: 0 },
+        businessSupplies: { statue: 100, musician: 100, books: 100, kiosks: 100 },
+        businessLicenses: { statue: 0, musician: 0, books: 0, kiosks: 0 },
         prestigeTokens: state.prestigeTokens + tokensGained,
         lastSaved: Date.now(),
         offlineReport: null,
@@ -248,6 +405,8 @@ export const useGameStore = create<GameState>()(
         auraTier: 0,
         poseClickCount: 0,
         businessLevels: { statue: 0, musician: 0, books: 0, kiosks: 0 },
+        businessSupplies: { statue: 100, musician: 100, books: 100, kiosks: 100 },
+        businessLicenses: { statue: 0, musician: 0, books: 0, kiosks: 0 },
         prestigeTokens: 0,
         prestigeUpgrades: { aura: false, genetics: false, entrepreneur: false },
         lastSaved: Date.now(),
@@ -404,21 +563,36 @@ export const useGameStore = create<GameState>()(
         const state = get();
         if (state.isGameOver) return;
 
-        // Las ganancias pasivas se detienen por completo cuando la salud está en menos de 10%
-        if (state.health < 10) {
-          set({ lastSaved: Date.now() });
-          return;
-        }
+        // Supplies decay and calculation
+        const newSupplies: Record<string, number> = { ...(state.businessSupplies || {}) };
+        const decayPerSec = 0.055; // 100% lasts ~30 mins of active play
 
         let income = 0;
         
-        // Calculate income
+        // Calculate income per business with supplies modifier
         Object.entries(state.businessLevels).forEach(([id, level]) => {
           if (level > 0) {
-            // baseIncome is defined as per minute, so we divide by 60 to get per second value
-            income += (BUSINESSES[id].baseIncome / 60) * level * deltaSeconds;
+            const currentSup = newSupplies[id] !== undefined ? newSupplies[id] : 100;
+            const updatedSup = Math.max(0, currentSup - decayPerSec * deltaSeconds);
+            newSupplies[id] = updatedSup;
+
+            // When supplies reach 0, business suffers a 70% penalty (runs at 30%)
+            const suppliesMod = updatedSup <= 0 ? 0.3 : 1.0;
+            const config = BUSINESSES[id];
+            if (config) {
+              income += (config.baseIncome / 60) * level * suppliesMod * deltaSeconds;
+            }
           }
         });
+
+        // Las ganancias pasivas se detienen por completo cuando la salud está en menos de 10%
+        if (state.health < 10) {
+          set({
+            businessSupplies: newSupplies,
+            lastSaved: Date.now()
+          });
+          return;
+        }
 
         // Apply Aura Magnética de prestigio (+50%)
         if (state.prestigeUpgrades.aura) income *= 1.5;
@@ -437,16 +611,26 @@ export const useGameStore = create<GameState>()(
 
         set((state) => ({
           money: state.money + income,
+          businessSupplies: newSupplies,
           lastSaved: Date.now()
         }));
       },
 
-      recoverStat: (stat, amount, cost) => {
+      recoverStat: (stat, amount, manualCost) => {
         const state = get();
         if (state.isGameOver) return;
-        if (state.money >= cost) {
+
+        const costs = getRecoveryCosts(
+          state.businessLevels,
+          state.businessSupplies,
+          state.prestigeUpgrades.aura,
+          state.auraTier
+        );
+        const actualCost = manualCost !== undefined ? manualCost : costs[stat];
+
+        if (state.money >= actualCost) {
           set({
-            money: state.money - cost,
+            money: state.money - actualCost,
             [stat]: Math.min(100, state[stat] + amount)
           });
         }

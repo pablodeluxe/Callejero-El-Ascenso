@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { useGameStore, BUSINESSES } from './store/gameStore';
+import { useGameStore, BUSINESSES, getRecoveryCosts } from './store/gameStore';
 import { useGameLoop } from './hooks/useGameLoop';
 import { StatsBar } from './components/StatsBar';
 import { AuraWidget } from './components/AuraWidget';
@@ -22,6 +22,7 @@ export default function App() {
   const auraTier = useGameStore((state) => state.auraTier || 0);
   const auraFrenzyUntil = useGameStore((state) => state.auraFrenzyUntil || 0);
   const businessLevels = useGameStore((state) => state.businessLevels);
+  const businessSupplies = useGameStore((state) => state.businessSupplies || {});
   const prestigeUpgrades = useGameStore((state) => state.prestigeUpgrades);
   const recoverStat = useGameStore((state) => state.recoverStat);
   const activeTimedTasks = useGameStore((state) => state.activeTimedTasks || {});
@@ -47,13 +48,20 @@ export default function App() {
   else if (auraTier >= 2) baseClickGain = 2;
   const clickGain = isFrenzy ? baseClickGain * 3 : baseClickGain;
 
+  // Compute dynamic recovery costs (lifestyle creep)
+  const recoveryCosts = useMemo(() => {
+    return getRecoveryCosts(businessLevels, businessSupplies, prestigeUpgrades.aura, auraTier);
+  }, [businessLevels, businessSupplies, prestigeUpgrades.aura, auraTier]);
+
   // Compute total passive income per minute and per second
   const { totalIncomePerMin, totalIncomePerSec, isDebuffed, isHealthCritical } = useMemo(() => {
     let incomePerMin = 0;
     Object.entries(businessLevels).forEach(([id, level]) => {
       const config = BUSINESSES[id];
       if (config && level > 0) {
-        incomePerMin += config.baseIncome * level;
+        const sup = businessSupplies?.[id] ?? 100;
+        const supMod = sup <= 0 ? 0.3 : 1.0;
+        incomePerMin += config.baseIncome * level * supMod;
       }
     });
 
@@ -87,7 +95,7 @@ export default function App() {
       isDebuffed: debuffed && !critical,
       isHealthCritical: critical
     };
-  }, [businessLevels, prestigeUpgrades, auraTier, health, mood]);
+  }, [businessLevels, businessSupplies, prestigeUpgrades, auraTier, health, mood]);
 
   // Format money: show decimals when under $1,000 so real-time ticks are immediately visible
   const formattedMoney = money < 1000
@@ -237,28 +245,41 @@ export default function App() {
             <AuraWidget />
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <ActionBtn 
-                icon={<Activity className="w-4 h-4" />} 
-                label="Comer (-$20)" 
-                desc="Recupera 30 Salud"
-                onClick={() => recoverStat('health', 30, 20)} 
-                disabled={money < 20}
-              />
-              <ActionBtn 
-                icon={<Droplets className="w-4 h-4" />} 
-                label="Ducharse (-$15)" 
-                desc="Recupera 40 Higiene"
-                onClick={() => recoverStat('hygiene', 40, 15)} 
-                disabled={money < 15}
-              />
-              <ActionBtn 
-                icon={<Gamepad2 className="w-4 h-4" />} 
-                label="Ocio (-$30)" 
-                desc="Recupera 35 Ánimo"
-                onClick={() => recoverStat('mood', 35, 30)} 
-                disabled={money < 30}
-              />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Acciones Rápidas de Supervivencia
+                </span>
+                {recoveryCosts.inflation > 0 && (
+                  <span className="text-[11px] text-amber-400/90 bg-amber-950/40 border border-amber-800/60 px-2 py-0.5 rounded-md font-medium">
+                    Costo de vida: +${recoveryCosts.inflation} por escala de ingresos
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <ActionBtn 
+                  icon={<Activity className="w-4 h-4" />} 
+                  label={`Comer (-$${recoveryCosts.health})`} 
+                  desc="Recupera 30 Salud"
+                  onClick={() => recoverStat('health', 30, recoveryCosts.health)} 
+                  disabled={money < recoveryCosts.health}
+                />
+                <ActionBtn 
+                  icon={<Droplets className="w-4 h-4" />} 
+                  label={`Ducharse (-$${recoveryCosts.hygiene})`} 
+                  desc="Recupera 40 Higiene"
+                  onClick={() => recoverStat('hygiene', 40, recoveryCosts.hygiene)} 
+                  disabled={money < recoveryCosts.hygiene}
+                />
+                <ActionBtn 
+                  icon={<Gamepad2 className="w-4 h-4" />} 
+                  label={`Ocio (-$${recoveryCosts.mood})`} 
+                  desc="Recupera 35 Ánimo"
+                  onClick={() => recoverStat('mood', 35, recoveryCosts.mood)} 
+                  disabled={money < recoveryCosts.mood}
+                />
+              </div>
             </div>
 
             {/* Businesses */}

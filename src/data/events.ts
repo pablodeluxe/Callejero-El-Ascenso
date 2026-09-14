@@ -320,5 +320,124 @@ export const SCAVENGE_EVENTS: GameEvent[] = [
         })
       }
     ]
+  },
+  {
+    id: 'event_bromatologia',
+    title: '¡Inspección Sorpresa de Bromatología y Salubridad!',
+    description: 'Inspectores municipales con carpetas y sellos caen a revisar las esquinas, puestos de comida, mercadería y la procedencia de tus negocios.',
+    options: [
+      {
+        label: 'Pagar acta de regularización e insumos legales (Costo: 6% de tu dinero)',
+        description: 'Pagas el sellado municipal correspondiente. Proteges tus negocios y ganas +5 Reputación ciudadana.',
+        action: (state) => {
+          const fine = Math.max(25, Math.floor(state.money * 0.06));
+          return {
+            money: Math.max(0, state.money - fine),
+            reputation: Math.min(100, state.reputation + 5),
+            mood: Math.max(0, state.mood - 4)
+          };
+        }
+      },
+      {
+        label: 'Apelar con Carisma y Reputación Callejera (Exige Rep >= 60)',
+        description: 'Usas tus contactos vecinales para convencer al inspector. Si tienes más de 60 de Reputación, tienes un 75% de éxito de safar gratis y ganar +12 Reputación. Si fallas, decomisan mercadería (-15 Salud y -$80).',
+        action: (state) => {
+          const hasRep = state.reputation >= 60;
+          const successRate = hasRep ? 0.75 : 0.30;
+          const success = Math.random() < successRate;
+          if (success) {
+            return {
+              reputation: Math.min(100, state.reputation + 12),
+              mood: Math.min(100, state.mood + 15),
+              aura: (state.aura || 0) + 200
+            };
+          } else {
+            return {
+              money: Math.max(0, state.money - 80),
+              health: Math.max(0, state.health - 15),
+              reputation: Math.max(0, state.reputation - 8),
+              mood: Math.max(0, state.mood - 12)
+            };
+          }
+        }
+      },
+      {
+        label: 'Bajar las persianas y esconderte en el callejón',
+        description: 'Evitas multas económicas directas, pero el estrés y la humillación te desgastan (-18 Ánimo, -6 Reputación).',
+        action: (state) => ({
+          mood: Math.max(0, state.mood - 18),
+          reputation: Math.max(0, state.reputation - 6)
+        })
+      }
+    ]
+  },
+  {
+    id: 'event_afip_callejera',
+    title: '¡Auditoría de Controladores de Espacio Público!',
+    description: 'Los sabuesos del fisco urbano notaron que circula mucho efectivo por tu esquina y exigen comprobar tus declaraciones y licencias.',
+    options: [
+      {
+        label: 'Contratar gestor / apoderado barrial (Costo: 8% de tus fondos)',
+        description: 'Tu gestor presenta recibos provisorios y arregla la auditoría. Obtienes +10 Reputación y +300 Aura.',
+        action: (state) => {
+          const cost = Math.max(40, Math.floor(state.money * 0.08));
+          return {
+            money: Math.max(0, state.money - cost),
+            reputation: Math.min(100, state.reputation + 10),
+            aura: (state.aura || 0) + 300,
+            mood: Math.min(100, state.mood + 5)
+          };
+        }
+      },
+      {
+        label: 'Alegar que todo es "Propina a la Gorra y Donaciones" (50% éxito)',
+        description: 'Defiendes la naturaleza artística y precaria de tus ingresos. Si convences al auditor: +25 Ánimo y +500 Aura. Si no te cree: multa del 12% de tu dinero.',
+        action: (state) => {
+          const success = Math.random() < 0.50;
+          if (success) {
+            return {
+              mood: Math.min(100, state.mood + 25),
+              aura: (state.aura || 0) + 500,
+              reputation: Math.min(100, state.reputation + 8)
+            };
+          } else {
+            const fine = Math.max(50, Math.floor(state.money * 0.12));
+            return {
+              money: Math.max(0, state.money - fine),
+              mood: Math.max(0, state.mood - 15),
+              reputation: Math.max(0, state.reputation - 5)
+            };
+          }
+        }
+      }
+    ]
+  },
+  {
+    id: 'event_sindicato_cuadrillas',
+    title: '¡Asamblea del Gremio Callejero de la Cuadra!',
+    description: 'Los referentes de cuidacoches y limpiavidrios se reúnen para fijar tarifas y piden el aporte solidario a la caja de herramientas comunitaria.',
+    options: [
+      {
+        label: 'Aportar a la Caja Solidaria ($60 o 4% de fondos)',
+        description: 'Colaboras con el fondo común. Te ganas el respeto incondicional de los muchachos (+15 Reputación, +20 Ánimo y +400 Aura).',
+        action: (state) => {
+          const contrib = Math.max(60, Math.floor(state.money * 0.04));
+          return {
+            money: Math.max(0, state.money - contrib),
+            reputation: Math.min(100, state.reputation + 15),
+            mood: Math.min(100, state.mood + 20),
+            aura: (state.aura || 0) + 400
+          };
+        }
+      },
+      {
+        label: 'Rechazar la asamblea y trabajar por cuenta propia',
+        description: 'Te tildan de individualista. Tensión en la cuadra (-10 Reputación, -15 Ánimo, riesgo de choque verbal).',
+        action: (state) => ({
+          reputation: Math.max(0, state.reputation - 10),
+          mood: Math.max(0, state.mood - 15)
+        })
+      }
+    ]
   }
 ];

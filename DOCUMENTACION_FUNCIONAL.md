@@ -180,9 +180,37 @@ Ubicado al final de la pantalla principal (*Mi Esquina*), permite al jugador rei
   * Salud, Higiene y Ánimo restablecidos al `100%`.
   * Reputación restablecida al valor inicial (`50`).
   * Todos los niveles de negocios restablecidos a `0`.
+  * Suministros y licencias de negocios reiniciados a sus valores de fábrica.
   * Aura, rachas, nivel de estilo y frenesí reiniciados a `0`.
   * Cancelación inmediata de cualquier changa o ritual en curso con pérdida total de progreso.
   * Restablecimiento de fichas y mejoras permanentes de prestigio a `0`.
+
+---
+
+### 3.8. ⚖️ Sistema de Balance y Progresión Escalada (Opciones 1, 2, 4 y 5)
+
+Para evitar el crecimiento desmedido en fases avanzadas y mantener el desafío de supervivencia táctica, se han incorporado cuatro pilares de balance:
+
+1. **Opción 1: Inflación y Costo de Vida Escalonado (*Lifestyle Creep*):**
+   * A medida que el personaje amplía sus negocios y aumenta su flujo de caja por minuto, el costo de las acciones rápidas de supervivencia (*Comer*, *Ducharse*, *Ocio*) aumenta un `1.5%` del ingreso por minuto en concepto de costo de vida y mantenimiento personal.
+   * La interfaz muestra un indicador dinámico del costo de vida ajustado.
+
+2. **Opción 2: Eventos de Riesgo Proporcionales e Inspecciones Municipales:**
+   * **¡Inspección Sorpresa de Bromatología y Salubridad!:** Exige pago de actas de regularización (6% del dinero) o apelar con alta reputación (≥60) con riesgo de decomiso.
+   * **¡Auditoría de Controladores de Espacio Público (AFIP Callejera)!:** Exige contratar gestor (8% de fondos) o alegar propinas a la gorra (50% de probabilidad de éxito o multa del 12%).
+   * **¡Asamblea del Gremio Callejero de la Cuadra!:** Petición de aporte a la caja solidaria de herramientas (4% de fondos) a cambio de reputación y aura, o tensión territorial.
+
+3. **Opción 4: Curvas de Costos Exponenciales con Soft-Caps y Habilitaciones Municipales:**
+   * Los negocios pasivos cuentan con multiplicadores de costo más pronunciados (`1.09` a `1.20`).
+   * **Soft-Cap (Nivel > 25):** Pasado el nivel 25, los costos de mejora escalan con una penalización geométrica adicional.
+   * **Habilitaciones Municipales (Milestones Tiers):** Cada 25 niveles (Nivel 25, 50, 75, 100), el negocio queda bloqueado hasta que el jugador tramite la *Habilitación Municipal* correspondiente mediante un pago escalonado.
+
+4. **Opción 5: Desgaste de Suministros y Mantenimiento de Puestos:**
+   * Cada negocio activo consume insumos continuamente (*Maquillaje*, *Cuerdas*, *Inventario*, *Mercadería*).
+   * **Penalización por Desabastecimiento:** Si los suministros llegan a `0%`, el rendimiento y los ingresos de ese negocio caen al **30%** (-70% de penalización) hasta que sea repuesto.
+   * **Mecánica de Reabastecimiento:** Botones individuales para cada negocio y un botón global *"Reabastecer Todos"* en el encabezado.
+
+---
 
 ---
 
