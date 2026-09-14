@@ -1,6 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { SCAVENGE_EVENTS } from '../data/events';
+import { ALL_TIMED_ACTIONS, TimedAction, TimedActionTier } from '../data/timedActions';
+
+export interface ActiveTimedTask {
+  id: string;
+  actionId: string;
+  category: 'primary' | 'secondary';
+  tierIndex: number;
+  startTime: number;
+  durationSeconds: number;
+  costPaid?: number;
+}
 
 export interface BusinessConfig {
   id: string;
@@ -115,6 +126,7 @@ export interface GameState {
   activeEvent: any | null; // Will define event type later
   isGameOver: boolean;
   deathReason: 'health' | 'hygiene' | 'mood' | 'reputation' | null;
+  activeTimedTasks: Record<string, ActiveTimedTask>;
   
   // Actions
   addMoney: (amount: number) => void;
@@ -135,6 +147,9 @@ export interface GameState {
   poseForAura: () => { success: boolean; message: string; isFrenzy: boolean; isFail?: boolean };
   buyAuraTier: (tier: number) => boolean;
   addAura: (amount: number) => void;
+  startTimedTask: (actionId: string, tierIndex: number) => { success: boolean; message: string };
+  cancelTimedTask: (taskId: string) => void;
+  claimTimedTask: (taskId: string) => { success: boolean; message: string; details?: any };
 }
 
 export const useGameStore = create<GameState>()(
@@ -159,6 +174,7 @@ export const useGameStore = create<GameState>()(
       activeEvent: null,
       isGameOver: false,
       deathReason: null,
+      activeTimedTasks: {},
 
       addMoney: (amount) => set((state) => ({ money: state.money + amount })),
       
@@ -239,14 +255,35 @@ export const useGameStore = create<GameState>()(
         activeEvent: null,
         isGameOver: false,
         deathReason: null,
+        activeTimedTasks: {},
       }),
 
       updateStats: (h, hy, m) => set((state) => {
         if (state.isGameOver) return state;
+
+        // Check active ritual buffs
+        const now = Date.now();
+        const activeTasks = Object.values(state.activeTimedTasks || {});
+        
+        let preventHealth = false;
+        let preventMood = false;
+
+        for (const task of activeTasks) {
+          if (now < task.startTime + task.durationSeconds * 1000) {
+            const action = ALL_TIMED_ACTIONS.find((a) => a.id === task.actionId);
+            const tier = action?.tiers[task.tierIndex];
+            if (tier?.buffs?.preventHealthDecay) preventHealth = true;
+            if (tier?.buffs?.preventMoodDecay) preventMood = true;
+          }
+        }
+
+        const effectiveH = preventHealth ? 0 : h;
+        const effectiveM = preventMood ? 0 : m;
+
         const genMod = state.prestigeUpgrades.genetics ? 0.5 : 1.0;
-        const newHealth = Math.max(0, state.health - h * genMod);
+        const newHealth = Math.max(0, state.health - effectiveH * genMod);
         const newHygiene = Math.max(0, state.hygiene - hy * genMod);
-        const newMood = Math.max(0, Math.min(100, state.mood - m * genMod));
+        const newMood = Math.max(0, Math.min(100, state.mood - effectiveM * genMod));
 
         let reason: 'health' | 'hygiene' | 'mood' | 'reputation' | null = null;
         if (newHealth <= 0) reason = 'health';
@@ -530,6 +567,178 @@ export const useGameStore = create<GameState>()(
 
       addAura: (amount: number) => {
         set((state) => ({ aura: (state.aura || 0) + amount }));
+      },
+
+      startTimedTask: (actionId: string, tierIndex: number) => {
+        const state = get();
+        if (state.isGameOver) return { success: false, message: 'El personaje ha colapsado.' };
+
+        const action = ALL_TIMED_ACTIONS.find((a) => a.id === actionId);
+        if (!action) return { success: false, message: 'Acción no encontrada.' };
+
+        const tier = action.tiers[tierIndex];
+        if (!tier) return { success: false, message: 'Nivel de duración no válido.' };
+
+        // Check cost
+        if (tier.cost && state.money < tier.cost) {
+          return { success: false, message: `No tienes suficiente dinero ($${tier.cost}) para comenzar esta actividad.` };
+        }
+
+        const currentTasks = Object.values(state.activeTimedTasks || {});
+
+        // Check if already running this exact action
+        if (currentTasks.some((t) => t.actionId === actionId)) {
+          return { success: false, message: 'Esta acción ya se encuentra en curso.' };
+        }
+
+        // Check parallel rules:
+        if (action.category === 'primary') {
+          const hasPrimary = currentTasks.some((t) => t.category === 'primary');
+          if (hasPrimary) {
+            return {
+              success: false,
+              message: 'Ya estás realizando una changa principal. Termínala o cancélala antes de empezar otra.'
+            };
+          }
+        } else {
+          const secondaryCount = currentTasks.filter((t) => t.category === 'secondary').length;
+          if (secondaryCount >= 2) {
+            return {
+              success: false,
+              message: 'Solo puedes tener un máximo de 2 rituales o acompañamientos activos en paralelo.'
+            };
+          }
+        }
+
+        const taskId = `${actionId}_${Date.now()}`;
+        const newTask: ActiveTimedTask = {
+          id: taskId,
+          actionId,
+          category: action.category,
+          tierIndex,
+          startTime: Date.now(),
+          durationSeconds: tier.durationSeconds,
+          costPaid: tier.cost || 0
+        };
+
+        set((s) => ({
+          money: tier.cost ? Math.max(0, s.money - tier.cost) : s.money,
+          activeTimedTasks: {
+            ...(s.activeTimedTasks || {}),
+            [taskId]: newTask
+          }
+        }));
+
+        return {
+          success: true,
+          message: `¡Comenzaste "${action.name}" (${tier.label})!`
+        };
+      },
+
+      cancelTimedTask: (taskId: string) => {
+        set((state) => {
+          const updated = { ...(state.activeTimedTasks || {}) };
+          delete updated[taskId];
+          return { activeTimedTasks: updated };
+        });
+      },
+
+      claimTimedTask: (taskId: string) => {
+        const state = get();
+        const task = (state.activeTimedTasks || {})[taskId];
+        if (!task) return { success: false, message: 'La tarea no existe o ya fue reclamada.' };
+
+        const now = Date.now();
+        const elapsed = (now - task.startTime) / 1000;
+        if (elapsed < task.durationSeconds) {
+          const remaining = Math.ceil(task.durationSeconds - elapsed);
+          const mins = Math.floor(remaining / 60);
+          const secs = remaining % 60;
+          const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+          return { success: false, message: `Aún no ha finalizado. Faltan ${timeStr}.` };
+        }
+
+        const action = ALL_TIMED_ACTIONS.find((a) => a.id === task.actionId);
+        if (!action) return { success: false, message: 'Acción no encontrada.' };
+
+        const tier = action.tiers[task.tierIndex];
+        if (!tier) return { success: false, message: 'Nivel no encontrado.' };
+
+        // Active ritual bonuses (other active tasks with multipliers)
+        const otherActiveTasks = Object.values(state.activeTimedTasks || {}).filter(
+          (t) => t.category === 'secondary' && t.id !== taskId
+        );
+
+        let moneyMultiplier = 1.0;
+        let auraMultiplier = 1.0;
+
+        for (const st of otherActiveTasks) {
+          const sAction = ALL_TIMED_ACTIONS.find((a) => a.id === st.actionId);
+          const sTier = sAction?.tiers[st.tierIndex];
+          if (sTier?.buffs?.moneyMultiplier) {
+            moneyMultiplier *= sTier.buffs.moneyMultiplier;
+          }
+          if (sTier?.buffs?.auraMultiplier) {
+            auraMultiplier *= sTier.buffs.auraMultiplier;
+          }
+        }
+
+        const r = tier.rewards;
+        let wonGamble = true;
+        if (r.successRate !== undefined) {
+          wonGamble = Math.random() < r.successRate;
+        }
+
+        let gainedMoney = 0;
+        if (wonGamble && r.moneyMin !== undefined) {
+          const max = r.moneyMax ?? r.moneyMin;
+          const base = Math.floor(r.moneyMin + Math.random() * (max - r.moneyMin + 1));
+          gainedMoney = Math.round(base * moneyMultiplier);
+        }
+
+        const gainedAura = r.aura ? Math.round(r.aura * auraMultiplier) : 0;
+        const healthDelta = wonGamble ? (r.health || 0) : -10;
+        const hygieneDelta = wonGamble ? (r.hygiene || 0) : -5;
+        const moodDelta = wonGamble ? (r.mood || 0) : -15;
+        const repDelta = wonGamble ? (r.reputation || 0) : -5;
+
+        // Apply stat bounds:
+        const newHealth = Math.max(1, Math.min(100, state.health + healthDelta));
+        const newHygiene = Math.max(1, Math.min(100, state.hygiene + hygieneDelta));
+        const newMood = Math.max(1, Math.min(100, state.mood + moodDelta));
+        const newReputation = Math.max(1, Math.min(100, state.reputation + repDelta));
+
+        const updatedTasks = { ...(state.activeTimedTasks || {}) };
+        delete updatedTasks[taskId];
+
+        set((s) => ({
+          money: s.money + gainedMoney,
+          health: newHealth,
+          hygiene: newHygiene,
+          mood: newMood,
+          reputation: newReputation,
+          aura: (s.aura || 0) + gainedAura,
+          activeTimedTasks: updatedTasks
+        }));
+
+        let message = wonGamble
+          ? `¡Completaste con éxito "${action.name}"!`
+          : `¡Mala suerte en "${action.name}"! Perdiste la apuesta y saliste con el ánimo bajo.`;
+
+        return {
+          success: true,
+          message,
+          details: {
+            actionName: action.name,
+            wonGamble,
+            gainedMoney,
+            gainedAura,
+            healthDelta,
+            hygieneDelta,
+            moodDelta,
+            repDelta
+          }
+        };
       }
     }),
     {

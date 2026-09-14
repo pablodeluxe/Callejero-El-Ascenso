@@ -5,11 +5,12 @@ import { StatsBar } from './components/StatsBar';
 import { AuraWidget } from './components/AuraWidget';
 import { BusinessList } from './components/BusinessList';
 import { PrestigeShop } from './components/PrestigeShop';
+import { TimedActionsScreen } from './components/TimedActionsScreen';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { EventModal } from './components/EventModal';
 import { OfflineModal } from './components/OfflineModal';
 import { GameOverModal } from './components/GameOverModal';
-import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame, Github, ExternalLink } from 'lucide-react';
+import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame, Github, ExternalLink, Clock, Store, Sparkles } from 'lucide-react';
 
 export default function App() {
   useGameLoop(); // Initialize the game loop
@@ -22,12 +23,21 @@ export default function App() {
   const businessLevels = useGameStore((state) => state.businessLevels);
   const prestigeUpgrades = useGameStore((state) => state.prestigeUpgrades);
   const recoverStat = useGameStore((state) => state.recoverStat);
+  const activeTimedTasks = useGameStore((state) => state.activeTimedTasks || {});
+
+  const [currentScreen, setCurrentScreen] = useState<'hub' | 'timed_actions'>('hub');
 
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(timer);
   }, []);
+
+  const activeTasksList = Object.values(activeTimedTasks);
+  const activeTasksCount = activeTasksList.length;
+  const hasReadyTasks = activeTasksList.some(
+    (t) => now >= t.startTime + t.durationSeconds * 1000
+  );
 
   const isFrenzy = now < auraFrenzyUntil;
   let baseClickGain = 1;
@@ -112,10 +122,53 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-6">
         
-        {/* Money Display */}
-        <div className={`rounded-3xl p-8 mb-8 border transition-all duration-300 flex flex-col items-center justify-center text-center relative overflow-hidden ${
+        {/* Screen Switcher Navigation Bar */}
+        <div className="flex items-center justify-center gap-2 mb-6 p-1.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-md">
+          <button
+            id="tab-hub"
+            onClick={() => setCurrentScreen('hub')}
+            className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer ${
+              currentScreen === 'hub'
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-950/50'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <Store className="w-4 h-4" />
+            <span>Mi Esquina</span>
+          </button>
+
+          <button
+            id="tab-timed-actions"
+            onClick={() => setCurrentScreen('timed_actions')}
+            className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 relative cursor-pointer ${
+              currentScreen === 'timed_actions'
+                ? 'bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 text-slate-950 font-extrabold shadow-md shadow-amber-950/50'
+                : 'text-slate-400 hover:text-amber-300 hover:bg-slate-800/60'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            <span>Changas & Rituales</span>
+
+            {activeTasksCount > 0 && (
+              <span
+                className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                  hasReadyTasks
+                    ? 'bg-emerald-400 text-slate-950 animate-bounce'
+                    : currentScreen === 'timed_actions'
+                    ? 'bg-slate-950 text-amber-300'
+                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                }`}
+              >
+                {hasReadyTasks ? '¡Listo!' : activeTasksCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Top Common Area: Money Display & Vital Stats */}
+        <div className={`rounded-3xl p-6 sm:p-8 mb-6 border transition-all duration-300 flex flex-col items-center justify-center text-center relative overflow-hidden ${
           isFrenzy 
             ? 'bg-gradient-to-b from-amber-950/60 to-slate-900 border-amber-500/70 shadow-2xl shadow-amber-950/50 ring-1 ring-amber-400' 
             : 'bg-slate-900 border-slate-800'
@@ -126,12 +179,12 @@ export default function App() {
               Efectivo Actual
             </div>
             
-            <h1 className="text-5xl md:text-6xl font-black text-white tabular-nums tracking-tighter mb-3">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tabular-nums tracking-tighter mb-3">
               ${formattedMoney}
             </h1>
 
             {/* Income Rate Badge */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-5">
               {isHealthCritical ? (
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/60 text-red-400 text-xs font-bold animate-pulse">
                   <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
@@ -157,7 +210,7 @@ export default function App() {
             
             <button
               onClick={() => useGameStore.getState().scavenge()}
-              className={`px-8 py-4 rounded-xl font-bold text-base shadow-lg transition active:scale-95 flex items-center gap-2 cursor-pointer ${
+              className={`px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg transition active:scale-95 flex items-center gap-2 cursor-pointer ${
                 isFrenzy
                   ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black shadow-amber-500/40 ring-2 ring-amber-300 animate-pulse'
                   : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20'
@@ -171,42 +224,54 @@ export default function App() {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats Bar */}
         <StatsBar />
 
-        {/* Aura & Estilo Urbana Widget */}
-        <AuraWidget />
+        {/* SCREEN 1: MI ESQUINA (HUB) */}
+        {currentScreen === 'hub' && (
+          <div id="screen-hub" className="space-y-6 animate-fadeIn">
+            {/* Aura & Estilo Urbana Widget */}
+            <AuraWidget />
 
-        {/* Quick Actions */}
-        <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-3">
-          <ActionBtn 
-            icon={<Activity className="w-4 h-4" />} 
-            label="Comer (-$20)" 
-            desc="Recupera 30 Salud"
-            onClick={() => recoverStat('health', 30, 20)} 
-            disabled={money < 20}
-          />
-          <ActionBtn 
-            icon={<Droplets className="w-4 h-4" />} 
-            label="Ducharse (-$15)" 
-            desc="Recupera 40 Higiene"
-            onClick={() => recoverStat('hygiene', 40, 15)} 
-            disabled={money < 15}
-          />
-          <ActionBtn 
-            icon={<Gamepad2 className="w-4 h-4" />} 
-            label="Ocio (-$30)" 
-            desc="Recupera 35 Ánimo"
-            onClick={() => recoverStat('mood', 35, 30)} 
-            disabled={money < 30}
-          />
-        </div>
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ActionBtn 
+                icon={<Activity className="w-4 h-4" />} 
+                label="Comer (-$20)" 
+                desc="Recupera 30 Salud"
+                onClick={() => recoverStat('health', 30, 20)} 
+                disabled={money < 20}
+              />
+              <ActionBtn 
+                icon={<Droplets className="w-4 h-4" />} 
+                label="Ducharse (-$15)" 
+                desc="Recupera 40 Higiene"
+                onClick={() => recoverStat('hygiene', 40, 15)} 
+                disabled={money < 15}
+              />
+              <ActionBtn 
+                icon={<Gamepad2 className="w-4 h-4" />} 
+                label="Ocio (-$30)" 
+                desc="Recupera 35 Ánimo"
+                onClick={() => recoverStat('mood', 35, 30)} 
+                disabled={money < 30}
+              />
+            </div>
 
-        {/* Businesses */}
-        <BusinessList />
+            {/* Businesses */}
+            <BusinessList />
 
-        {/* Prestige System */}
-        <PrestigeShop />
+            {/* Prestige System */}
+            <PrestigeShop />
+          </div>
+        )}
+
+        {/* SCREEN 2: CHANGAS & RITUALES */}
+        {currentScreen === 'timed_actions' && (
+          <div id="screen-timed-actions" className="animate-fadeIn">
+            <TimedActionsScreen />
+          </div>
+        )}
 
         {/* Footer Credits */}
         <footer id="app-footer" className="mt-14 pt-6 pb-8 border-t border-slate-800/80 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-center gap-2">

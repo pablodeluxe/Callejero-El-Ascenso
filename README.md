@@ -57,7 +57,26 @@ Gasta tus puntos de Aura en desbloquear rangos de presencia urbana con multiplic
 
 ---
 
-### 5. 🎲 Eventos Callejeros Dinámicos
+### 5. ⏳ Changas por Tiempo & Rituales en Paralelo
+Una pantalla dedicada donde puedes enviar a tu personaje a realizar actividades cronometradas de 5, 10 o 30 minutos (incluso mientras la app está cerrada o en segundo plano):
+
+* **🛠️ Changas Principales (1 Activa a la vez):**
+  * **Juntar metales para vender:** Sal a rastrear chatarra, cobre y latas con imanes potentes. A mayor tiempo invertido, mayores son las ganancias en efectivo.
+  * **Buscar comida abandonada en locales de comida rápida:** Inspecciona bandejas y mesas desocupadas para conseguir calorías gratis, recuperando Salud y Ánimo sin gastar un centavo.
+  * **Cantar a las palomas en la plaza:** Concierto acústico de graznidos que incrementa tu Ánimo y acumula Aura callejera.
+  * **Limpiar parabrisas en semáforo picante:** Changa de reflejos rápidos con alta propina pero un desgaste controlado de higiene y salud.
+  * **Partida clandestina de Truco o Dados:** Apuesta tu dinero en una partida tensa con un 60-70% de probabilidad de duplicar tu efectivo.
+* **🧪 Rituales y Acompañamientos en Paralelo (Hasta 2 Activos simultáneos):**
+  * **Beber agua bendita de la parroquia:** Te otorga una bendición que **inmuniza contra el desgaste de salud** durante todo el tiempo activo.
+  * **Prender vela de cartón a San Cayetano:** Ritual de la providencia que otorga un **+20% a +35% de multiplicador de dinero** en todas tus changas.
+  * **Armar origami con boletos de colectivo:** Ejercicio zen de papiroflexia que **congela al 100% el desgaste del ánimo**.
+  * **Llevar dientes de ajos en el bolsillo:** Amuleto protector contra malas vibras y eventos negativos.
+  * **Escuchar radio a pilas:** Música continua que recarga Aura y potencia la ganancia espiritual en un +25%.
+* **🏆 Reclamo y Notificaciones:** Al finalizar el tiempo, la barra de progreso se ilumina en verde esmeralda y puedes reclamar el botín con un desglose completo de recompensas.
+
+---
+
+### 6. 🎲 Eventos Callejeros Dinámicos
 A lo largo de la partida ocurren situaciones fortuitas y dilemas morales:
 * **¡La Taza de Café en el Aire!:** Un ejecutivo tropieza y su café caliente vuela por los aires.
   * *Arriesgarse (60% éxito):* Atraparlo sin mirar (+2,500 Aura, +10 Reputación, $50 propina) o fallar estrepitosamente (-3,000 Aura, -10 Salud, -25 Higiene).
