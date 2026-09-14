@@ -10,7 +10,8 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import { EventModal } from './components/EventModal';
 import { OfflineModal } from './components/OfflineModal';
 import { GameOverModal } from './components/GameOverModal';
-import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame, Github, ExternalLink, Clock, Store, Sparkles } from 'lucide-react';
+import { ResetGameModal } from './components/ResetGameModal';
+import { Wallet, Activity, Droplets, Gamepad2, TrendingUp, AlertTriangle, AlertOctagon, Flame, Github, ExternalLink, Clock, Store, Sparkles, RotateCcw } from 'lucide-react';
 
 export default function App() {
   useGameLoop(); // Initialize the game loop
@@ -26,6 +27,7 @@ export default function App() {
   const activeTimedTasks = useGameStore((state) => state.activeTimedTasks || {});
 
   const [currentScreen, setCurrentScreen] = useState<'hub' | 'timed_actions'>('hub');
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -98,6 +100,7 @@ export default function App() {
       <EventModal />
       <OfflineModal />
       <GameOverModal />
+      <ResetGameModal isOpen={showResetModal} onClose={() => setShowResetModal(false)} />
       
       {/* Header */}
       <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
@@ -263,6 +266,34 @@ export default function App() {
 
             {/* Prestige System */}
             <PrestigeShop />
+
+            {/* Hard Reset / Renacer a Cero */}
+            <div id="card-hard-reset" className="bg-slate-900/80 border border-slate-800/90 rounded-3xl p-5 sm:p-6 transition hover:border-slate-700 relative overflow-hidden">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 mt-0.5 sm:mt-0">
+                    <RotateCcw className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-sm sm:text-base text-slate-200">
+                      Renacer Callejero
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed max-w-lg">
+                      ¿No estás feliz con el camino actual de tu personaje? Puedes renunciar a todo y reiniciar la partida desde cero para comenzar una nueva historia.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  id="btn-open-hard-reset"
+                  onClick={() => setShowResetModal(true)}
+                  className="w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-800/90 hover:bg-red-950/40 hover:text-red-300 hover:border-red-500/50 text-slate-300 border border-slate-700/80 transition active:scale-95 cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-sm"
+                >
+                  <RotateCcw className="w-4 h-4 shrink-0" />
+                  <span>Renacer a Cero</span>
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

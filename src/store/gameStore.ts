@@ -298,7 +298,8 @@ export const useGameStore = create<GameState>()(
           hygiene: newHygiene,
           mood: newMood,
           isGameOver: isDead || state.isGameOver,
-          deathReason: isDead ? reason : state.deathReason
+          deathReason: isDead ? reason : state.deathReason,
+          activeTimedTasks: isDead ? {} : state.activeTimedTasks
         };
       }),
 
@@ -339,7 +340,8 @@ export const useGameStore = create<GameState>()(
             hygiene: newHygiene,
             mood: newMood,
             isGameOver: isDead || state.isGameOver,
-            deathReason: isDead ? reason : state.deathReason
+            deathReason: isDead ? reason : state.deathReason,
+            activeTimedTasks: isDead ? {} : state.activeTimedTasks
           };
         }
       }),
@@ -353,7 +355,8 @@ export const useGameStore = create<GameState>()(
         isGameOver: false,
         deathReason: null,
         activeEvent: null,
-        auraStreak: 0
+        auraStreak: 0,
+        activeTimedTasks: {}
       })),
 
       setOfflineReport: (report) => set({ offlineReport: report }),
@@ -391,6 +394,7 @@ export const useGameStore = create<GameState>()(
             reputation: nextRep,
             isGameOver: isDead || state.isGameOver,
             deathReason: isDead ? reason : state.deathReason,
+            activeTimedTasks: isDead ? {} : state.activeTimedTasks,
             activeEvent: null
           };
         });

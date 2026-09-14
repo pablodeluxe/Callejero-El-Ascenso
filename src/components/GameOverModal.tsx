@@ -173,7 +173,7 @@ export function GameOverModal() {
             </button>
 
             <p className="text-[11px] text-emerald-400/90 leading-tight text-center px-1">
-              Entregas todo tu dinero actual a los paramédicos del hospital. Revives con <strong>Salud, Higiene y Ánimo al 25%</strong>, conservando tus negocios, reputación y nivel de Aura intactos.
+              Entregas todo tu dinero actual a los paramédicos del hospital. Revives con <strong>Salud, Higiene y Ánimo al 25%</strong>, conservando tus negocios, reputación y nivel de Aura intactos (las <em>changas y rituales en curso se cancelan y se pierde su progreso</em>).
             </p>
 
             <button

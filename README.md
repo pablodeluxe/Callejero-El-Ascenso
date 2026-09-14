@@ -58,20 +58,26 @@ Gasta tus puntos de Aura en desbloquear rangos de presencia urbana con multiplic
 ---
 
 ### 5. ⏳ Changas por Tiempo & Rituales en Paralelo
-Una pantalla dedicada donde puedes enviar a tu personaje a realizar actividades cronometradas de 5, 10 o 30 minutos (incluso mientras la app está cerrada o en segundo plano):
+Una pantalla dedicada donde puedes enviar a tu personaje a realizar actividades cronometradas que van desde tandas cortas (5 a 30 minutos) hasta jornadas laborales realistas de **6 horas (media jornada)**, **9 horas (jornada completa)**, **12 horas (guardia rotativa extendida)** e incluso **maratones de 24 horas continuas** (incluso mientras la app está cerrada o en segundo plano):
 
 * **🛠️ Changas Principales (1 Activa a la vez):**
-  * **Juntar metales para vender:** Sal a rastrear chatarra, cobre y latas con imanes potentes. A mayor tiempo invertido, mayores son las ganancias en efectivo.
-  * **Buscar comida abandonada en locales de comida rápida:** Inspecciona bandejas y mesas desocupadas para conseguir calorías gratis, recuperando Salud y Ánimo sin gastar un centavo.
-  * **Cantar a las palomas en la plaza:** Concierto acústico de graznidos que incrementa tu Ánimo y acumula Aura callejera.
-  * **Limpiar parabrisas en semáforo picante:** Changa de reflejos rápidos con alta propina pero un desgaste controlado de higiene y salud.
-  * **Partida clandestina de Truco o Dados:** Apuesta tu dinero en una partida tensa con un 60-70% de probabilidad de duplicar tu efectivo.
+  * **🏢 Sereno y Guardia Nocturna de Galpón (3h, 6h, 9h, 12h y 24hs):** Vigila predios industriales con linterna y mate. Hasta `$32,000` y `+650 Aura` en la guardia maratónica de 24 horas.
+  * **🚚 Carga y descarga en Mercado Central (1h, 3h, 6h, 9h y 12h):** Turno de estibador profesional con descarga de camiones frigoríficos y acoplados. Otorga gran masa de salud muscular y excelentes ganancias.
+  * **🛍️ Peón de Feria Barrial y Armado de Puestos (1h, 3h, 6h, 9h y 12h):** Armado de tablones, atención al cliente y desarme nocturno para forjar reputación en el barrio.
+  * **⛺ Vigilia y Acampe de Fila para Recitales / Trámites (3h, 6h, 9h, 12h y 24hs):** Guarda puestos codiciados en veredas para fanáticos y trámites bancarios. Hasta `$29,000` y `+800 Aura`.
+  * **🧲 Juntar metales y chatarra (5m a 12hs):** Recolecta cobre, aluminio y caños para el chatarrero.
+  * **🚗 Cuidar autos en la cuadra ("Trapito", 10m a 12hs):** Control de cuadra y estacionamiento en recitales multitudinarios.
+  * **🔍 Revolver contenedores de lujo (15m a 12hs):** Incursiones tras restaurantes gourmet y hoteles 5 estrellas.
+  * **🍔 Buscar comida abandonada en comida rápida (5m a 6hs):** Recupera Salud y Ánimo gratis.
+  * **🎤 Cantar a las palomas en la plaza (5m a 6hs):** Conciertos acústicos y leyendas urbanas con ganancias masivas de Aura.
+  * **🧘 Meditar sobre un cartón mojado (10m a 12hs):** Nirvana del asfalto y regeneración divina.
+  * **🃏 Timba clandestina de Truco y Dados (5m a 3hs):** Partidas de alto riesgo con apuestas de hasta `$1,000`.
 * **🧪 Rituales y Acompañamientos en Paralelo (Hasta 2 Activos simultáneos):**
-  * **Beber agua bendita de la parroquia:** Te otorga una bendición que **inmuniza contra el desgaste de salud** durante todo el tiempo activo.
-  * **Prender vela de cartón a San Cayetano:** Ritual de la providencia que otorga un **+20% a +35% de multiplicador de dinero** en todas tus changas.
-  * **Armar origami con boletos de colectivo:** Ejercicio zen de papiroflexia que **congela al 100% el desgaste del ánimo**.
-  * **Llevar dientes de ajos en el bolsillo:** Amuleto protector contra malas vibras y eventos negativos.
-  * **Escuchar radio a pilas:** Música continua que recarga Aura y potencia la ganancia espiritual en un +25%.
+  * **🕯️ Prender vela de cartón a San Cayetano (20m a 24hs):** Multiplicador de ganancias en changas de $\times 1.25$ hasta $\times 2.25$ (+125% por 24 horas continuas).
+  * **📻 Escuchar radio a pilas en la oreja (15m a 24hs):** Congela al 100% el desgaste de ánimo durante hasta un día completo.
+  * **💧 Beber agua bendita de grifo municipal (10m a 12hs):** Inmunidad total al desgaste de salud y multiplicador de Aura de hasta $\times 2.8$.
+  * **🧄 Llevar dientes de ajos en el bolsillo (30m a 24hs):** Escudo contra eventos negativos y bonus de dinero de hasta +35%.
+  * **🍞 Masticar chicle encontrado (5m a 30m):** Menta fresca y congelamiento de hambre en tareas rápidas.
 * **🏆 Reclamo y Notificaciones:** Al finalizar el tiempo, la barra de progreso se ilumina en verde esmeralda y puedes reclamar el botín con un desglose completo de recompensas.
 
 ---
@@ -92,26 +98,73 @@ A lo largo de la partida ocurren situaciones fortuitas y dilemas morales:
 
 ---
 
-### 6. 🌙 Progresión Desconectado (Offline) & Ventana de 14 Horas
+### 7. 🌙 Progresión Desconectado (Offline) & Ventana de 14 Horas
 * **Ventana Segura de Sueño (Hasta 14 Horas):** El desgaste mientras el juego está cerrado o en segundo plano se calibra para que el personaje aguante hasta 14 horas de inactividad continua. Durante este período, el juego activa un **suelo de seguridad al 5%**, evitando que el personaje muera mientras duermes para que puedas despertar, recoger tus ganancias acumuladas y recuperarte.
 * **Inactividad Superior a 14 Horas:** Si pasas más de 14 horas continuas sin ingresar al juego, se desactiva el suelo de protección. Las necesidades caen al 0% y se desencadena la muerte cómica correspondiente.
-* **Rescate con Reanimación Callejera:** Al regresar tras más de 14 horas de ausencia y encontrar la pantalla de Game Over, se te ofrece la **Reanimación Callejera** pagando todo el dinero acumulado para revivir con los valores al **25%** sin perder tus negocios ni tu progreso, o bien aceptar el destino y reiniciar de cero.
+* **Rescate con Reanimación Callejera:** Al regresar tras más de 14 horas de ausencia (o ante un colapso en partida activa) y encontrar la pantalla de Game Over, se te ofrece la **Reanimación Callejera** pagando todo el dinero acumulado para revivir con los valores al **25%** sin perder tus negocios ni tu nivel de Aura (las changas y rituales en curso se cancelan y se pierde su progreso), o bien aceptar el destino y reiniciar de cero.
 * **Informe al Despertar:** Si te mantienes dentro de la ventana de 14 horas, al ingresar recibirás el resumen detallado con el efectivo pasivo listo para ser recolectado.
 
 ---
 
-### 7. 🏆 Sistema de Prestigio (Renacer Urbano)
-Cuando alcanzas suficiente riqueza, puedes reiniciar tu partida a cambio de **Fichas de Prestigio** para desbloquear ventajas permanentes:
+### 8. 🏆 Sistema de Prestigio (Renacer Urbano)
+Cuando alcanzas suficiente riqueza ($10,000 acumulados), puedes ascender a cambio de **Fichas de Prestigio** para desbloquear ventajas permanentes:
 * **Aura Magnética:** +50% a todos los ingresos pasivos.
 * **Genética Callejera:** Reduce un 50% la velocidad con la que se desgastan la salud, higiene y ánimo.
 * **Mente Emprendedora:** 25% de descuento permanente en el coste de todos los negocios.
+* **Maestría en Changas:** 20% de reducción de tiempo en changas temporizadas.
 
 ---
 
-### 8. 📱 Progressive Web App (PWA)
+### 9. 🔄 Renacer a Cero (Reinicio Total Voluntario)
+Ubicado al pie de la pantalla principal (*Mi Esquina*), permite reiniciar la partida por completo en caso de que el jugador desee recomenzar su camino desde cero:
+* **Modal de Confirmación:** Requiere confirmación explícita con desglose de todo lo que se restablece.
+* **Efectos:** Restablece a cero el dinero, niveles de negocios, mejoras de prestigio, auras y estilos, cancelando de inmediato cualquier changa o ritual activo y devolviendo las estadísticas vitales al 100%.
+
+---
+
+### 10. 📱 Progressive Web App (PWA)
 * Totalmente adaptable para dispositivos móviles, tablets y escritorio.
 * Instalable directamente en Android e iOS como una aplicación nativa.
 * Soporte para ejecución sin conexión a internet (*offline-first*).
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+├── public/
+│   ├── app-icon.png               # Icono de la aplicación y PWA
+│   ├── favicon.ico
+│   └── manifest.json              # Configuración de Progressive Web App
+├── src/
+│   ├── components/
+│   │   ├── ActionBtn.tsx          # Botón de acción rápida para recuperación de atributos
+│   │   ├── AuraWidget.tsx         # Panel de Aura, Tirar Pose, Frenesí y Tienda de Auras
+│   │   ├── BusinessCard.tsx       # Tarjeta de gestión y compra de negocios pasivos
+│   │   ├── BusinessList.tsx       # Listado de negocios callejeros
+│   │   ├── DeathModal.tsx         # Pantalla de muerte cómica y Reanimación Callejera
+│   │   ├── EventModal.tsx         # Cuadro de diálogo interactivo para eventos dinámicos
+│   │   ├── OfflineModal.tsx       # Resumen de ganancias e informe tras tiempo desconectado
+│   │   ├── PrestigeShop.tsx       # Tienda de mejoras permanentes con Fichas de Prestigio
+│   │   ├── PWAInstallButton.tsx   # Botón de instalación PWA en el encabezado
+│   │   ├── ResetGameModal.tsx     # Modal de confirmación para Renacer a Cero (Reinicio total)
+│   │   ├── StatsBar.tsx           # Barras de estado en tiempo real (Salud, Higiene, Ánimo, Reputación)
+│   │   └── TimedActionsScreen.tsx # Pantalla completa de Changas y Rituales por tiempo
+│   ├── data/
+│   │   ├── events.ts              # Eventos aleatorios, dilemas morales y recompensas
+│   │   └── timedActions.ts        # Configuración de changas principales y rituales paralelos
+│   ├── hooks/
+│   │   └── useGameLoop.ts         # Bucle principal de juego (desgaste, ticks e ingresos offline)
+│   ├── store/
+│   │   └── gameStore.ts           # Store central Zustand con persistencia en localStorage
+│   ├── App.tsx                    # Vista principal, navegación de pestañas y contenedor
+│   ├── index.css                  # Estilos base con Tailwind CSS
+│   └── main.tsx                   # Entrada principal de la aplicación React
+├── metadata.json                  # Metadatos descriptivos de la aplicación
+├── package.json                   # Dependencias y scripts de compilación
+├── tsconfig.json                  # Configuración de TypeScript
+└── vite.config.ts                 # Configuración de Vite y plugin PWA
+```
 
 ---
 

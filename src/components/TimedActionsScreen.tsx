@@ -20,6 +20,10 @@ import {
   Shield,
   Flame,
   Smile,
+  Warehouse,
+  Truck,
+  ShoppingBag,
+  Tent,
   Clock,
   CheckCircle2,
   AlertCircle,
@@ -46,7 +50,11 @@ const ACTION_ICONS: Record<string, React.ElementType> = {
   Radio,
   Shield,
   Flame,
-  Smile
+  Smile,
+  Warehouse,
+  Truck,
+  ShoppingBag,
+  Tent
 };
 
 interface ClaimResult {
@@ -120,8 +128,12 @@ export function TimedActionsScreen() {
     const elapsed = (now - startTime) / 1000;
     const remaining = Math.max(0, Math.ceil(durationSeconds - elapsed));
     if (remaining === 0) return '00:00';
-    const mins = Math.floor(remaining / 60);
+    const hours = Math.floor(remaining / 3600);
+    const mins = Math.floor((remaining % 3600) / 60);
     const secs = remaining % 60;
+    if (hours > 0) {
+      return `${hours}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+    }
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
